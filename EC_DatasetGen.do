@@ -19,7 +19,7 @@ log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
 
 use "`datadir'/Nigeria_National/NG_NatR3.dta"
 	pmasample
-	keep country state round FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
+	keep country state round EA strata FQmetainstanceID FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
 		current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
 		current_or_recent_user current_recent_method current_recent_methodnum  ///
 		FQweight* cp mcp wealth*
@@ -49,11 +49,26 @@ foreach dataset in ///
 		if country=="CD" {
 			replace country="CD_CK" if province==2
 			replace country="CD_Kinshasa" if province==1
+			keep country round EA_ID FQmetainstanceID FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
+				current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
+				current_or_recent_user current_recent_method current_recent_methodnum  ///
+				FQweight* cp mcp wealth* 
 			}
-		keep country round FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
-			current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
-			current_or_recent_user current_recent_method current_recent_methodnum  ///
-			FQweight* cp mcp wealth* 
+		else {
+			capture confirm EA
+			if _rc!=. {
+				keep country round EA_ID strata FQmetainstanceID FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
+					current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
+					current_or_recent_user current_recent_method current_recent_methodnum  ///
+					FQweight* cp mcp wealth* 
+				}
+			else {
+				keep country round EA strata FQmetainstanceID FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
+					current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
+					current_or_recent_user current_recent_method current_recent_methodnum  ///
+					FQweight* cp mcp wealth* 
+				}
+			}
 		tempfile dataset
 		save `dataset', replace
 	restore
@@ -67,7 +82,7 @@ foreach dataset in ///
 	preserve
 		use `dataset'
 		pmasample
-		keep country round FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
+		keep country round strata EA FQmetainstanceID FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
 			current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
 			current_or_recent_user current_recent_method current_recent_methodnum  ///
 			FQweight* cp mcp wealth* emergency_12mo_yn
@@ -90,6 +105,13 @@ foreach region in Lagos Kaduna Rivers Taraba Anambra Nasarawa Kano {
 	replace wealthquintile=wealthquintile_`region' if wealthquintile_`region'!=.
 	drop wealthquintile_`region'
 	}
+
+drop FQweightorig
+egen one=tag(FQmetainstanceID)
+drop FQmetainstanceID
+tostring EA_ID, replace
+replace EA=EA_ID if EA_ID!=""
+drop EA_ID
 	
 save "`datadir'/ECdata_v2.dta", replace
 		
