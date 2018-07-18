@@ -86,7 +86,7 @@ gen u25=1 if age5==20 | age5==15
 	replace u25=0 if age5>20
 
 {
-********************************************************************************
+/********************************************************************************
 *Section B. Analysis
 ********************************************************************************
 *Initial Tabouts
@@ -160,13 +160,13 @@ restore
 */
 }
 ********************************************************************************
-*Section B. Analysis
+*Section C. Tables
 ********************************************************************************
 
 tabout country using "`excel_paper'", replace ///
 	c(freq) f(0) npos(row) h1("Country")
 
-/*Table 0 - Background Characteristics
+*Table 0 - Background Characteristics
 foreach country in `country_list' {
 	capture confirm strata
 	if _rc!=0 {
@@ -318,7 +318,11 @@ order EC_measure5_percent, after(EC_measure4_percent)
 export excel using "`excel_paper_2'", sheet("Measure5") first(variable) 
 restore
 
-*Graph 1*
+********************************************************************************
+*Section D. Graphs
+********************************************************************************
+
+*Graph 1*/
 preserve
 drop if country=="KE"
 drop if country=="BF"
