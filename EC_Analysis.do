@@ -147,21 +147,20 @@ restore
 
 *Table 2.5*
 foreach country in `country_list' {
-	capture confirm strata
-	if _rc!=0 {
-		svyset EA [pw=FQweight], singleunit(scaled)
-		}
-	else { 
-		svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
-		}
 	foreach subgroup in `subgroup_list' {
-		tabout `measure_list' if country=="`country'" & `subgroup'==1 ///
-			[aw=FQweight] using "`excel_paper'", oneway mi append ///
-			c(col ci) f(2 1) clab(Column_% 95%_CI) svy npos(lab) percent show(all) ///
-			h2("Table 2.5: Percent estimate of use for `country', `subgroup'")
+		di "`country'"
+		di "`subgroup'"
+		tab EC_measure1 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		ci mean EC_measure1 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		tab EC_measure2 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		ci mean EC_measure2 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		tab EC_measure3 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		ci mean EC_measure3 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		tab EC_measure4 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		ci mean EC_measure4 [aw=FQweight] if country=="`country'" & `subgroup'==1
 		}
-	}
-
+	}		
+	
 *Table 3*
 preserve
 collapse (mean) `measure_list' [pw=FQweight], by(country married) 
