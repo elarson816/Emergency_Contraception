@@ -85,80 +85,11 @@ gen u20=1 if age5==15
 gen u25=1 if age5==20 | age5==15
 	replace u25=0 if age5>20
 
-{
+
 /********************************************************************************
 *Section B. Analysis
 ********************************************************************************
-*Initial Tabouts
-tabout country round using "`excel'", replace ///
-	c(freq) f(0) npos(row) h1("Country/Round")
-foreach country in `country_list' {	
-	tabout EC_measure1 if country=="`country'" [aw=FQweight] using "`excel'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 1 for `country', weighted")
-	tabout EC_measure2 if country=="`country'" [aw=FQweight] using "`excel'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 2 for `country', weighted")
-	tabout EC_measure3 if country=="`country'" [aw=FQweight] using "`excel'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 3 for `country', weighted")
-	tabout EC_measure4 if country=="`country'" [aw=FQweight] using "`excel'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 4 for `country', weighted")
-	capture noisily tabout EC_measure5 if country=="`country'" [aw=FQweight] using "`excel'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 5 for `country', weighted")
-	}
 
-*Tabouts by marital status	
-preserve
-keep if married==1
-tabout country round using "`excel_marriage'", replace ///
-	c(freq) f(0) npos(row) h1("Country/Round")
-foreach country in `country_list' {	
-	tabout EC_measure1 if country=="`country'" [aw=FQweight] using "`excel_marriage'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 1 for `country', married women, weighted")
-	tabout EC_measure2 if country=="`country'" [aw=FQweight] using "`excel_marriage'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 2 for `country', married women, weighted")
-	tabout EC_measure3 if country=="`country'" [aw=FQweight] using "`excel_marriage'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 3 for `country', married women, weighted")
-	tabout EC_measure4 if country=="`country'" [aw=FQweight] using "`excel_marriage'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 4 for `country', married women, weighted")
-	capture noisily tabout EC_measure5 if country=="`country'" [aw=FQweight] using "`excel_marriage'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 5 for `country', married women, weighted")
-	}
-restore
-
-*Tabouts for unmarried sexually active women 
-preserve
-keep if umsexactive==1
-tabout country round using "`excel_sex'", replace ///
-	c(freq) f(0) npos(row) h1("Country/Round")
-foreach country in `country_list' {	
-	tabout EC_measure1 if country=="`country'" [aw=FQweight] using "`excel_sex'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 1 for `country', unmarried sexually active women, weighted")
-	tabout EC_measure2 if country=="`country'" [aw=FQweight] using "`excel_sex'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 2 for `country', unmarried sexually active women, weighted")
-	tabout EC_measure3 if country=="`country'" [aw=FQweight] using "`excel_sex'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 3 for `country', unmarried sexually active women, weighted")
-	tabout EC_measure4 if country=="`country'" [aw=FQweight] using "`excel_sex'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 4 for `country', unmarried sexually active women, weighted")
-	capture noisily tabout EC_measure5 if country=="`country'" [aw=FQweight] using "`excel_sex'", mi append ///
-		c(freq col) f(0 2) npos(row) ///
-		h2("Measure 5 for `country', unmarried sexually active women, weighted")
-	}
-restore
-*/
-}
 ********************************************************************************
 *Section C. Tables
 ********************************************************************************
