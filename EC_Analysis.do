@@ -84,11 +84,31 @@ gen u20=1 if age5==15
 	replace u20=0 if age5!=15
 gen u25=1 if age5==20 | age5==15
 	replace u25=0 if age5>20
+	
+forvalues val = 15(5)50 {
+	gen age_`val'=1 if age5==`val'
+	replace age_`val'=0 if age5!=`val'
+	}
 
 
-/********************************************************************************
-*Section B. Analysis
 ********************************************************************************
+*Section B. Background Characteristics
+********************************************************************************
+foreach country in `country_list' {
+	di "`country'"
+	tab married [aw=FQweight] if country=="`country'"
+	ci mean married [aw=FQweight] if country=="`country'"
+	tab umsexactive [aw=FQweight] if country=="`country'"
+	ci mean umsexactive [aw=FQweight] if country=="`country'"
+	tab age5 [aw=FQweight] if country=="`country'"
+	ci mean age_15 [aw=FQweight] if country=="`country'"
+	ci mean age_20 [aw=FQweight] if country=="`country'"
+	ci mean age_25 [aw=FQweight] if country=="`country'"
+	ci mean age_30 [aw=FQweight] if country=="`country'"
+	ci mean age_35 [aw=FQweight] if country=="`country'"
+	ci mean age_40 [aw=FQweight] if country=="`country'"
+	ci mean age_45 [aw=FQweight] if country=="`country'"
+	}
 
 ********************************************************************************
 *Section C. Tables
@@ -97,22 +117,15 @@ gen u25=1 if age5==20 | age5==15
 tabout country using "`excel_paper'", replace ///
 	c(freq) f(0) npos(row) h1("Country")
 
-*Table 0 - Background Characteristics
+/*Table 0 - Background Characteristics
 foreach country in `country_list' {
-	capture confirm strata
-	if _rc!=0 {
-		svyset EA [pw=FQweight], singleunit(scaled)
-		}
-	else { 
-		svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
-		}
 	tabout one if country=="`country'" [aw=FQweight] using "`excel_paper'", mi append ///
 		h2("Table 0: Total informants for `country'")
 	tabout married umsexactive age5 if country=="`country'" [aw=FQweight] using "`excel_paper'", oneway mi append ///
-		c(col ci) f(1 1) clab(Column_% 95%_CI) svy npos(lab) percent ///
+		c(col) f(1) clab(Column_%) npos(lab) percent ///
 		h2("Table 0: Background Characterisitcs for `country'")
 		}
-		
+*/
 *Table 1
 foreach country in `country_list' {
 	capture confirm strata
