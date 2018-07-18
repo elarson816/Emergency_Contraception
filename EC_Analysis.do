@@ -94,6 +94,18 @@ forvalues val = 15(5)50 {
 ********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
+preserve
+
+replace married=married*100
+replace umsexactive=umsexactive*100
+replace age_15=age_15*100
+replace age_20=age_20*100
+replace age_25=age_25*100
+replace age_30=age_30*100
+replace age_35=age_35*100
+replace age_40=age_40*100
+replace age_45=age_45*100
+
 foreach country in `country_list' {
 	di "`country'"
 	tab married [aw=FQweight] if country=="`country'"
@@ -109,6 +121,8 @@ foreach country in `country_list' {
 	ci mean age_40 [aw=FQweight] if country=="`country'"
 	ci mean age_45 [aw=FQweight] if country=="`country'"
 	}
+	
+restore
 
 ********************************************************************************
 *Section C. Tables
@@ -118,6 +132,13 @@ tabout country using "`excel_paper'", replace ///
 	c(freq) f(0) npos(row) h1("Country")
 
 *Table 1
+preserve
+
+replace EC_measure1=EC_measure1*100
+replace EC_measure2=EC_measure2*100
+replace EC_measure3=EC_measure3*100
+replace EC_measure4=EC_measure4*100
+
 foreach country in `country_list' {
 	di "`country'"
 	tab EC_measure1 [aw=FQweight] if country=="`country'"
@@ -129,6 +150,12 @@ foreach country in `country_list' {
 	tab EC_measure4 [aw=FQweight] if country=="`country'"
 	ci mean EC_measure4 [aw=FQweight] if country=="`country'"
 	}	
+ci mean EC_measure1 [aw=FQweight]
+ci mean EC_measure2 [aw=FQweight]
+ci mean EC_measure3 [aw=FQweight]
+ci mean EC_measure4 [aw=FQweight]
+
+restore
 	
 *Table 2*
 drop if country=="BF" | country=="KE"
@@ -146,6 +173,23 @@ export excel using "`excel_paper_2'", sheet("total_means") firstrow(variables) r
 restore
 
 *Table 2.5*
+preserve
+
+replace married=married*100
+replace umsexactive=umsexactive*100
+replace age_15=age_15*100
+replace age_20=age_20*100
+replace age_25=age_25*100
+replace age_30=age_30*100
+replace age_35=age_35*100
+replace age_40=age_40*100
+replace age_45=age_45*100
+
+replace EC_measure1=EC_measure1*100
+replace EC_measure2=EC_measure2*100
+replace EC_measure3=EC_measure3*100
+replace EC_measure4=EC_measure4*100
+
 foreach country in `country_list' {
 	foreach subgroup in `subgroup_list' {
 		di "`country'"
@@ -159,7 +203,9 @@ foreach country in `country_list' {
 		tab EC_measure4 [aw=FQweight] if country=="`country'" & `subgroup'==1
 		ci mean EC_measure4 [aw=FQweight] if country=="`country'" & `subgroup'==1
 		}
-	}		
+	}	
+
+restore
 	
 *Table 3*
 preserve
@@ -236,8 +282,13 @@ foreach country in BF_R5 KE_R6 {
 		h2("Table 5: Percent estimate of use for `country' measure 5")
 	}
 
+*Table 5*	
 preserve
 keep if country=="BF_R5" | country=="KE_R6"
+
+bysort country: tab EC_measure5 [aw=FQweight]
+bysort country: ci mean EC_measure5 [aw=FQweight]
+
 collapse (mean) `measure_list2' [pw=FQweight], by(country)
 foreach measure in `measure_list2' {
 	gen `measure'_percent=`measure'*100
