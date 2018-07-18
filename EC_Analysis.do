@@ -117,30 +117,19 @@ foreach country in `country_list' {
 tabout country using "`excel_paper'", replace ///
 	c(freq) f(0) npos(row) h1("Country")
 
-/*Table 0 - Background Characteristics
-foreach country in `country_list' {
-	tabout one if country=="`country'" [aw=FQweight] using "`excel_paper'", mi append ///
-		h2("Table 0: Total informants for `country'")
-	tabout married umsexactive age5 if country=="`country'" [aw=FQweight] using "`excel_paper'", oneway mi append ///
-		c(col) f(1) clab(Column_%) npos(lab) percent ///
-		h2("Table 0: Background Characterisitcs for `country'")
-		}
-*/
 *Table 1
 foreach country in `country_list' {
-	capture confirm strata
-	if _rc!=0 {
-		svyset EA [pw=FQweight], singleunit(scaled)
-		}
-	else { 
-		svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
-		}
-	tabout `measure_list' if country=="`country'" ///
-		[aw=FQweight] using "`excel_paper'", oneway mi append ///
-		c(col ci) f(2 1) clab(Column_% 95%_CI) svy npos(lab) percent show(all) ///
-		h2("Table 1: Percent estimate of use for `country'")
-	}
-
+	di "`country'"
+	tab EC_measure1 [aw=FQweight] if country=="`country'"
+	ci mean EC_measure1 [aw=FQweight] if country=="`country'"
+	tab EC_measure2 [aw=FQweight] if country=="`country'"
+	ci mean EC_measure2 [aw=FQweight] if country=="`country'"
+	tab EC_measure3 [aw=FQweight] if country=="`country'"
+	ci mean EC_measure3 [aw=FQweight] if country=="`country'"
+	tab EC_measure4 [aw=FQweight] if country=="`country'"
+	ci mean EC_measure4 [aw=FQweight] if country=="`country'"
+	}	
+	
 *Table 2*
 drop if country=="BF" | country=="KE"
 preserve
