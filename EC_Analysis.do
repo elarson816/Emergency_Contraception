@@ -14,8 +14,8 @@ global date=subinstr("`c_today'", " ", "",.)
 global ECfolder "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis"
 global resultsdir "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis/Tabout"
 local datadir "/Users/ealarson/Documents/RandomCoding/Emergency_Contraception/Datasets"
-local country_list "BF_R5 CD_Kinshasa CD_CK ET GH India_Rajasthan KE_R6 NE NG_Kaduna NG_Lagos NG_Taraba NG_Kano NG_Rivers NG_Nasarawa NG_Anambra UG"
-local country_list2 "BF BF_R5 KE KE_R6"
+local country_list "BF CD_Kinshasa CD_CK ET GH India_Rajasthan KE NE NG_Kaduna NG_Lagos NG_Taraba NG_Kano NG_Rivers NG_Nasarawa NG_Anambra UG"
+local country_list2 "BF KE"
 local measure_list "EC_measure1 EC_measure2 EC_measure3 EC_measure4"
 local measure_list2 "EC_measure1 EC_measure4 EC_measure5"
 local subgroup_list "married umsexactive u20 u25"
@@ -53,8 +53,8 @@ replace EC_measure4=1 if EC==1 | recent_methodnum==8
 label val EC_measure4 yes_no
 
 gen EC_measure5=0
-replace EC_measure5=1 if EC==1 & (country=="BF_R5" | country=="KE_R6")
-replace EC_measure5=1 if emergency_12mo_yn==1 & (country=="BF_R5" | country=="KE_R6")
+replace EC_measure5=1 if EC==1 & (country=="BF" | country=="KE")
+replace EC_measure5=1 if emergency_12mo_yn==1 & (country=="BF" | country=="KE")
 label val EC_measure5 yes_no
 
 * Generate Sex in last 30 days variable
@@ -90,8 +90,23 @@ forvalues val = 15(5)50 {
 	replace age_`val'=0 if age5!=`val'
 	}
 
-
 ********************************************************************************
+*Survey Set Data
+********************************************************************************
+	
+capture confirm strata
+	if _rc!=0 {
+		svyset EA [pw=FQweight], singleunit(scaled)
+		}
+	else { 
+		if inlist(country, "NG_Anambra", "NG_Kaduna", "NG_Kano", "NG_Lagos", "NG_Nasarawa", "NG_Rivers", "NG_Taraba") {
+			svyset EA [pw=FQweight], singleunit(scaled)
+			}
+		else {
+			svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
+			}
+		}	
+/********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
 preserve
@@ -109,17 +124,10 @@ replace age_45=age_45*100
 foreach country in `country_list' {
 	di "`country'"
 	tab married [aw=FQweight] if country=="`country'"
-	ci mean married [aw=FQweight] if country=="`country'"
 	tab umsexactive [aw=FQweight] if country=="`country'"
-	ci mean umsexactive [aw=FQweight] if country=="`country'"
+	svy: prop married umsexactive if country=="`country'"
 	tab age5 [aw=FQweight] if country=="`country'"
-	ci mean age_15 [aw=FQweight] if country=="`country'"
-	ci mean age_20 [aw=FQweight] if country=="`country'"
-	ci mean age_25 [aw=FQweight] if country=="`country'"
-	ci mean age_30 [aw=FQweight] if country=="`country'"
-	ci mean age_35 [aw=FQweight] if country=="`country'"
-	ci mean age_40 [aw=FQweight] if country=="`country'"
-	ci mean age_45 [aw=FQweight] if country=="`country'"
+	svy: prop age_15 age_20 age_25 age_30 age_35 age_40 age_45 if country=="`country'"
 	}
 	
 restore
@@ -128,8 +136,6 @@ restore
 *Section C. Tables
 ********************************************************************************
 
-tabout country using "`excel_paper'", replace ///
-	c(freq) f(0) npos(row) h1("Country")
 
 *Table 1
 preserve
@@ -142,24 +148,18 @@ replace EC_measure4=EC_measure4*100
 foreach country in `country_list' {
 	di "`country'"
 	tab EC_measure1 [aw=FQweight] if country=="`country'"
-	ci mean EC_measure1 [aw=FQweight] if country=="`country'"
 	tab EC_measure2 [aw=FQweight] if country=="`country'"
-	ci mean EC_measure2 [aw=FQweight] if country=="`country'"
 	tab EC_measure3 [aw=FQweight] if country=="`country'"
-	ci mean EC_measure3 [aw=FQweight] if country=="`country'"
 	tab EC_measure4 [aw=FQweight] if country=="`country'"
-	ci mean EC_measure4 [aw=FQweight] if country=="`country'"
+	svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4 if country=="`country'"
 	}	
-ci mean EC_measure1 [aw=FQweight]
-ci mean EC_measure2 [aw=FQweight]
-ci mean EC_measure3 [aw=FQweight]
-ci mean EC_measure4 [aw=FQweight]
+svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4
 
 restore
 	
 *Table 2*
-drop if country=="BF" | country=="KE"
 preserve
+
 collapse (mean) `measure_list' [pw=FQweight], by(country)
 foreach measure in `measure_list' {
 	gen `measure'_percent=`measure'*100
@@ -170,43 +170,66 @@ order EC_measure2_percent, after(EC_measure1_percent)
 order EC_measure3_percent, after(EC_measure2_percent)
 order EC_measure4_percent, after(EC_measure3_percent)
 export excel using "`excel_paper_2'", sheet("total_means") firstrow(variables) replace
+
 restore
 
-*Table 2.5*
-preserve
+*Table 2.5*/
+foreach country in `country_list' {	
+	preserve
+	keep if country=="`country'"
 
-replace married=married*100
-replace umsexactive=umsexactive*100
-replace age_15=age_15*100
-replace age_20=age_20*100
-replace age_25=age_25*100
-replace age_30=age_30*100
-replace age_35=age_35*100
-replace age_40=age_40*100
-replace age_45=age_45*100
+	replace married=married*100
+	replace umsexactive=umsexactive*100
+	replace age_15=age_15*100
+	replace age_20=age_20*100
+	replace age_25=age_25*100
+	replace age_30=age_30*100
+	replace age_35=age_35*100
+	replace age_40=age_40*100
+	replace age_45=age_45*100
 
-replace EC_measure1=EC_measure1*100
-replace EC_measure2=EC_measure2*100
-replace EC_measure3=EC_measure3*100
-replace EC_measure4=EC_measure4*100
+	replace EC_measure1=EC_measure1*100
+	replace EC_measure2=EC_measure2*100
+	replace EC_measure3=EC_measure3*100
+	replace EC_measure4=EC_measure4*100
 
-foreach country in `country_list' {
 	foreach subgroup in `subgroup_list' {
 		di "`country'"
 		di "`subgroup'"
-		tab EC_measure1 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		ci mean EC_measure1 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		tab EC_measure2 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		ci mean EC_measure2 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		tab EC_measure3 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		ci mean EC_measure3 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		tab EC_measure4 [aw=FQweight] if country=="`country'" & `subgroup'==1
-		ci mean EC_measure4 [aw=FQweight] if country=="`country'" & `subgroup'==1
+		tab EC_measure1 `subgroup' [aw=FQweight]
+		tab EC_measure2 `subgroup' [aw=FQweight]
+		tab EC_measure3 `subgroup' [aw=FQweight]
+		tab EC_measure4 `subgroup' [aw=FQweight]
+		svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4
 		}
+	restore
 	}	
-
-restore
 	
+foreach subgroup in `subgroup_list' {
+	preserve
+	
+	replace married=married*100
+	replace umsexactive=umsexactive*100
+	replace age_15=age_15*100
+	replace age_20=age_20*100
+	replace age_25=age_25*100
+	replace age_30=age_30*100
+	replace age_35=age_35*100
+	replace age_40=age_40*100
+	replace age_45=age_45*100
+
+	replace EC_measure1=EC_measure1*100
+	replace EC_measure2=EC_measure2*100
+	replace EC_measure3=EC_measure3*100
+	replace EC_measure4=EC_measure4*100
+	
+	di "`subgroup'"
+	svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4 if `subgroup'==1
+	
+	restore
+	}
+
+assert 0
 *Table 3*
 preserve
 collapse (mean) `measure_list' [pw=FQweight], by(country married) 
@@ -268,27 +291,16 @@ restore
 
 
 *Table 4*
-foreach country in BF_R5 KE_R6 {
-	capture confirm strata
-	if _rc!=0 {
-		svyset EA [pw=FQweight], singleunit(scaled)
-		}
-	else { 
-		svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
-		}
-	tabout EC_measure5 if country=="`country'" ///
-		[aw=FQweight] using "`excel_paper'", oneway mi append ///
-		c(col ci) f(2 1) clab(Column_% 95%_CI) svy npos(lab) percent show(all) ///
-		h2("Table 5: Percent estimate of use for `country' measure 5")
-	}
-
-*Table 5*	
 preserve
-keep if country=="BF_R5" | country=="KE_R6"
 
-bysort country: tab EC_measure5 [aw=FQweight]
-bysort country: ci mean EC_measure5 [aw=FQweight]
-
+keep if country=="BF" | country=="KE"
+foreach country in BF KE {
+	di "`country'"
+	
+	tab EC_measure5 [aw=FQweight] if country=="`country'"
+	svy: prop EC_measure5  if country=="`country'"
+	}
+	
 collapse (mean) `measure_list2' [pw=FQweight], by(country)
 foreach measure in `measure_list2' {
 	gen `measure'_percent=`measure'*100
@@ -299,13 +311,14 @@ drop `measure_list2'
 order EC_measure4_percent, after(EC_measure1_percent)
 order EC_measure5_percent, after(EC_measure4_percent)
 export excel using "`excel_paper_2'", sheet("Measure5") first(variable) 
+
 restore
 
 ********************************************************************************
 *Section D. Graphs
 ********************************************************************************
 
-*Graph 1*/
+*Graph 1*
 preserve
 drop if country=="KE"
 drop if country=="BF"
