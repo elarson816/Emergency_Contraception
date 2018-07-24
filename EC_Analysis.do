@@ -106,7 +106,7 @@ capture confirm strata
 			svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
 			}
 		}	
-/********************************************************************************
+********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
 preserve
@@ -173,63 +173,29 @@ export excel using "`excel_paper_2'", sheet("total_means") firstrow(variables) r
 
 restore
 
-*Table 2.5*/
+*Table 2.5*
 foreach country in `country_list' {	
 	preserve
 	keep if country=="`country'"
 
-	replace married=married*100
-	replace umsexactive=umsexactive*100
-	replace age_15=age_15*100
-	replace age_20=age_20*100
-	replace age_25=age_25*100
-	replace age_30=age_30*100
-	replace age_35=age_35*100
-	replace age_40=age_40*100
-	replace age_45=age_45*100
-
-	replace EC_measure1=EC_measure1*100
-	replace EC_measure2=EC_measure2*100
-	replace EC_measure3=EC_measure3*100
-	replace EC_measure4=EC_measure4*100
-
 	foreach subgroup in `subgroup_list' {
 		di "`country'"
-		di "`subgroup'"
+		di "`subgroup' - Need to multiple by 100"
 		tab EC_measure1 `subgroup' [aw=FQweight]
 		tab EC_measure2 `subgroup' [aw=FQweight]
 		tab EC_measure3 `subgroup' [aw=FQweight]
 		tab EC_measure4 `subgroup' [aw=FQweight]
-		svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4
+		svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4 if `subgroup'==1
 		}
 	restore
 	}	
 	
 foreach subgroup in `subgroup_list' {
-	preserve
-	
-	replace married=married*100
-	replace umsexactive=umsexactive*100
-	replace age_15=age_15*100
-	replace age_20=age_20*100
-	replace age_25=age_25*100
-	replace age_30=age_30*100
-	replace age_35=age_35*100
-	replace age_40=age_40*100
-	replace age_45=age_45*100
-
-	replace EC_measure1=EC_measure1*100
-	replace EC_measure2=EC_measure2*100
-	replace EC_measure3=EC_measure3*100
-	replace EC_measure4=EC_measure4*100
-	
 	di "`subgroup'"
 	svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4 if `subgroup'==1
-	
-	restore
 	}
 
-assert 0
+
 *Table 3*
 preserve
 collapse (mean) `measure_list' [pw=FQweight], by(country married) 

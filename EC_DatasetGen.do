@@ -17,7 +17,7 @@ local datadir "/Users/ealarson/Documents/RandomCoding/Emergency_Contraception/Da
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
 
-use "`datadir'/Nigeria_National/NG_NatR3.dta"
+use "`datadir'/Nigeria_National/NG_NatR4.dta"
 	pmasample
 	keep country state round Cluster_ID strata FQmetainstanceID FQ_age school FQmarital_status last_time_sex last_time_sex_value age_at_first_sex current_user ///
 		current_method current_methodnum* EC recent_user recent_method recent_methodnum* ///
@@ -30,8 +30,8 @@ use "`datadir'/Nigeria_National/NG_NatR3.dta"
 	replace country="NG_Rivers" if state==5
 	replace country="NG_Nasarawa" if state==6
 	replace country="NG_Anambra" if state==7
+	tostring Cluster_ID, replace
 	rename Cluster_ID EA
-	tostring EA, replace
 	drop state
 	save "`datadir'/EC/EC_v2.dta", replace
 
@@ -442,7 +442,7 @@ drop FQweightorig
 egen one=tag(FQmetainstanceID)
 drop FQmetainstanceID
 tostring EA_ID, replace
-replace EA=EA_ID if EA_ID!=""
+replace EA=EA_ID if EA==""
 drop EA_ID
 	
 save "`datadir'/ECdata_v2.dta", replace
