@@ -109,8 +109,12 @@ capture confirm strata
 ********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
-preserve
+local tabout_excel "$resultsdir/ECAnalysis_Tabouts_v2_$date.xls"
 
+tabout country using "`tabout_excel'"
+
+preserve
+/*
 replace married=married*100
 replace umsexactive=umsexactive*100
 replace age_15=age_15*100
@@ -119,19 +123,22 @@ replace age_25=age_25*100
 replace age_30=age_30*100
 replace age_35=age_35*100
 replace age_40=age_40*100
-replace age_45=age_45*100
+replace age_45=age_45*100*/
 
 foreach country in `country_list' {
 	di "`country'"
-	tab married [aw=FQweight] if country=="`country'"
-	tab umsexactive [aw=FQweight] if country=="`country'"
+	tabout married [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Married women: `country'") append
+	tabout umsexactive [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Unmarried sexually active women: `country'") append
 	svy: prop married umsexactive if country=="`country'"
-	tab age5 [aw=FQweight] if country=="`country'"
+	tabout age5 [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Age: `country'") append
 	svy: prop age_15 age_20 age_25 age_30 age_35 age_40 age_45 if country=="`country'"
 	}
 	
 restore
-
+assert 0
 ********************************************************************************
 *Section C. Tables
 ********************************************************************************
