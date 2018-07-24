@@ -106,6 +106,7 @@ capture confirm strata
 			svyset EA [pw=FQweight], strata(strata) singleunit(scaled)
 			}
 		}	
+		
 ********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
@@ -114,7 +115,7 @@ local tabout_excel "$resultsdir/ECAnalysis_Tabouts_v2_$date.xls"
 tabout country using "`tabout_excel'"
 
 preserve
-/*
+
 replace married=married*100
 replace umsexactive=umsexactive*100
 replace age_15=age_15*100
@@ -123,7 +124,7 @@ replace age_25=age_25*100
 replace age_30=age_30*100
 replace age_35=age_35*100
 replace age_40=age_40*100
-replace age_45=age_45*100*/
+replace age_45=age_45*100
 
 foreach country in `country_list' {
 	di "`country'"
@@ -138,7 +139,7 @@ foreach country in `country_list' {
 	}
 	
 restore
-assert 0
+
 ********************************************************************************
 *Section C. Tables
 ********************************************************************************
@@ -154,10 +155,14 @@ replace EC_measure4=EC_measure4*100
 
 foreach country in `country_list' {
 	di "`country'"
-	tab EC_measure1 [aw=FQweight] if country=="`country'"
-	tab EC_measure2 [aw=FQweight] if country=="`country'"
-	tab EC_measure3 [aw=FQweight] if country=="`country'"
-	tab EC_measure4 [aw=FQweight] if country=="`country'"
+	tabout EC_measure1 [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 1: `country'") append
+	tabout EC_measure2 [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 2: `country'") append
+	tabout EC_measure3 [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 3: `country'") append
+	tabout EC_measure4 [aw=FQweight] if country=="`country'" using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 4: `country'") append
 	svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4 if country=="`country'"
 	}	
 svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4
@@ -188,10 +193,14 @@ foreach country in `country_list' {
 	foreach subgroup in `subgroup_list' {
 		di "`country'"
 		di "`subgroup' - Need to multiple by 100"
-		tab EC_measure1 `subgroup' [aw=FQweight]
-		tab EC_measure2 `subgroup' [aw=FQweight]
-		tab EC_measure3 `subgroup' [aw=FQweight]
-		tab EC_measure4 `subgroup' [aw=FQweight]
+		tabout EC_measure1 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 1: `country' `subgroup'") append
+		tabout EC_measure2 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 2: `country' `subgroup'") append
+		tabout EC_measure3 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 3: `country' `subgroup'") append
+		tabout EC_measure4 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 4: `country' `subgroup'") append
 		svy: prop EC_measure1 EC_measure2 EC_measure3 EC_measure4 if `subgroup'==1
 		}
 	restore
@@ -216,7 +225,7 @@ drop `measure_list'
 order EC_measure2_percent_mar, after(EC_measure1_percent_mar)
 order EC_measure3_percent_mar, after(EC_measure2_percent_mar)
 order EC_measure4_percent_mar, after(EC_measure3_percent_mar)
-export excel using "`excel_paper_2'", sheet("married_means") first(variable) replace
+export excel using "`excel_paper_2'", sheet("married_means") first(variable)
 restore
 
 preserve
@@ -322,7 +331,7 @@ drop `measure_list'
 twoway ///
 	scatter EC_measure2_diff_measure1 EC_measure3_diff_measure1 EC_measure4_diff_measure1 EC_measure1_percent, ///
 	ylabel(0(.2)1) ymtick(0(.1)1) ytitle("Percentage point difference with measure 1") ysize(7) /// 
-	xlabel(0(.2)2) xmtick(0(.1)2) xtitle("Measure 1 by country") xsize(10) ///
+	xlabel(0(.4)2.8) xmtick(0(.1)2.8) xtitle("Measure 1 by country") xsize(10) ///
 	msize(vsmall vsmall vsmall) mlabel(country country country) mlabsize(vsmall vsmall vsmall) msymbol(square circle triangle) ///
 	legend(rows(1)) legend(size(2))
 graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis/Tabout/EC_Graph1", as(pdf) replace
