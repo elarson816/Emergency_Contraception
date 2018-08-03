@@ -14,17 +14,16 @@ global date=subinstr("`c_today'", " ", "",.)
 global ECfolder "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis"
 global resultsdir "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis/Tabout"
 local datadir "/Users/ealarson/Documents/RandomCoding/Emergency_Contraception/Datasets"
-local country_list "BF CD_Kinshasa CD_CK ET GH India_Rajasthan KE NE NG_Kaduna NG_Lagos NG_Taraba NG_Kano NG_Rivers NG_Nasarawa NG_Anambra UG"
-local country_list2 "BF KE"
+
+local country_list "BF CdI CD_Kinshasa CD_CK ET GH India_Rajasthan KE NE NG_Anambra NG_Kaduna NG_Kano NG_Lagos NG_Nasarawa NG_Taraba NG_Rivers UG"
+local country_list2 "BF KE UG"
+
 local measure_list "EC_measure1 EC_measure2 EC_measure3 EC_measure4"
 local measure_list2 "EC_measure1 EC_measure4 EC_measure5"
-local subgroup_list "married umsexactive u20 u25"
-local excel "$resultsdir/ECAnalysis_$date.xls"
-local excel_marriage "$resultsdir/ECAnalysis_MaritalStatus_$date.xls"
-local excel_sex "$resultsdir/ECAnalysis_SexStatus_$date.xls"
-local excel_paper "$resultsdir/ECAnalysis_PaperTables_$date.xls"
-local excel_paper_2 "$resultsdir/ECAnalysis_PaperTablesv2_$date.xls"
 
+local subgroup_list "married umsexactive u20 u25"
+
+local tabout_excel "$resultsdir/ECAnalysis_Tabouts_v2_$date.xls"
 
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
@@ -110,8 +109,6 @@ capture confirm strata
 ********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
-local tabout_excel "$resultsdir/ECAnalysis_Tabouts_v2_$date.xls"
-
 tabout country using "`tabout_excel'"
 
 preserve
@@ -275,7 +272,7 @@ restore
 *Table 4*
 preserve
 
-keep if country=="BF" | country=="KE"
+keep if country=="BF" | country=="KE" | country=="UG"
 foreach country in BF KE {
 	di "`country'"
 	
