@@ -24,6 +24,7 @@ local measure_list2 "EC_measure1 EC_measure4 EC_measure5"
 local subgroup_list "married umsexactive u20 u25"
 
 local tabout_excel "$resultsdir/ECAnalysis_Tabouts_v2_$date.xls"
+local excel_paper_2 "$resultsdir/ECAnalysis_PaperTablesv2_$date.xls"
 
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
@@ -189,7 +190,7 @@ foreach country in `country_list' {
 
 	foreach subgroup in `subgroup_list' {
 		di "`country'"
-		di "`subgroup' - Need to multiple by 100"
+		di "`subgroup'"
 		tabout EC_measure1 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
 		h2("Measure 1: `country' `subgroup'") append
 		tabout EC_measure2 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
@@ -270,16 +271,25 @@ restore
 
 
 *Table 4*
-preserve
 
-keep if country=="BF" | country=="KE" | country=="UG"
-foreach country in BF KE {
+foreach country in `country_list2' {
 	di "`country'"
 	
 	tab EC_measure5 [aw=FQweight] if country=="`country'"
 	svy: prop EC_measure5  if country=="`country'"
+	
+	foreach subgroup in `subgroup_list' {
+		di "`subgroup'"
+		tabout EC_measure5 `subgroup' [aw=FQweight] using "`tabout_excel'", cells(freq col) f(0 2) ///
+		h2("Measure 5: `country' `subgroup'") append
+		svy: prop EC_measure5 if `subgroup'==1
+		}
 	}
 	
+
+preserve
+keep if country=="BF" | country=="KE" | country=="UG"
+
 collapse (mean) `measure_list2' [pw=FQweight], by(country)
 foreach measure in `measure_list2' {
 	gen `measure'_percent=`measure'*100
@@ -293,22 +303,82 @@ export excel using "`excel_paper_2'", sheet("Measure5") first(variable)
 
 restore
 
+preserve
+keep if country=="BF" | country=="KE" | country=="UG"
+
+collapse (mean) `measure_list2' [pw=FQweight], by(country married)
+foreach measure in `measure_list2' {
+	keep if married==1
+	gen `measure'_percent_mar=`measure'*100
+	bysort country: gen `measure'_diff_measure1_mar=`measure'_percent-EC_measure1_percent if married==1
+	}
+drop if married==0
+drop `measure_list2'
+order EC_measure4_percent_mar, after(EC_measure1_percent_mar)
+order EC_measure5_percent_mar, after(EC_measure4_percent_mar)
+export excel using "`excel_paper_2'", sheet("Measure5_married_means) first(variable)
+restore
+
+preserve
+keep if country=="BF" | country=="KE" | country=="UG"
+
+collapse (mean) `measure_list2' [pw=FQweight], by(country umsa)
+foreach measure in `measure_list2' {
+	keep if umsa==1
+	gen `measure'_percent_umsa=`measure'*100
+	bysort country: gen `measure'_diff_measure1_umsa=`measure'_percent-EC_measure1_percent if umsa==1
+	}
+drop if umsa==0
+drop `measure_list2'
+order EC_measure4_percent_umsa, after(EC_measure1_percent_umsa)
+order EC_measure5_percent_umsa, after(EC_measure4_percent_umsa)
+export excel using "`excel_paper_2'", sheet("Measure5_umsa_means) first(variable)
+restore
+
+preserve
+keep if country=="BF" | country=="KE" | country=="UG"
+
+collapse (mean) `measure_list2' [pw=FQweight], by(country u20)
+foreach measure in `measure_list2' {
+	keep if u20==1
+	gen `measure'_percent_u20=`measure'*100
+	bysort country: gen `measure'_diff_measure1_u20=`measure'_percent-EC_measure1_percent if u20==1
+	}
+drop if u20==0
+drop `measure_list2'
+order EC_measure4_percent_u20, after(EC_measure1_percent_u20)
+order EC_measure5_percent_u20, after(EC_measure4_percent_u20)
+export excel using "`excel_paper_2'", sheet("Measure5_u20_means) first(variable)
+restore
+
+preserve
+keep if country=="BF" | country=="KE" | country=="UG"
+
+collapse (mean) `measure_list2' [pw=FQweight], by(country u25)
+foreach measure in `measure_list2' {
+	keep if u25==1
+	gen `measure'_percent_u25=`measure'*100
+	bysort country: gen `measure'_diff_measure1_u25=`measure'_percent-EC_measure1_percent if u25==1
+	}
+drop if u25==0
+drop `measure_list2'
+order EC_measure4_percent_u25, after(EC_measure1_percent_u25)
+order EC_measure5_percent_u25, after(EC_measure4_percent_u25)
+export excel using "`excel_paper_2'", sheet("Measure5_u25_means) first(variable)
+restore
+
+
 ********************************************************************************
 *Section D. Graphs
 ********************************************************************************
 
-*Graph 1*
-preserve
-drop if country=="KE"
-drop if country=="BF"
-
-replace country="Burkina Faso" if country=="BF_R5"
+replace country="Burkina Faso" if country=="BF"
 replace country="DRC Kinshasa" if country=="CD_Kinshasa"
 replace country="DRC Kongo Central" if country=="CD_CK"
 replace country="Ethiopia" if country=="ET"
 replace country="Ghana" if country=="GH"
 replace country="India Rajasthan" if country=="India_Rajasthan"
-replace country="Kenya" if country=="KE_R6"
+replace country="Kenya" if country=="KE"
 replace country="Niger" if country=="NE"
 replace country="Nigeria Anambra" if country=="NG_Anambra"
 replace country="Nigeria Kaduna" if country=="NG_Kadune"
@@ -318,6 +388,9 @@ replace country="Nigeria Nasarawa" if country=="NG_Nasarawa"
 replace country="Nigeria Rivers" if country=="NG_Rivers"
 replace country="Nigera Taraba" if country=="NG_Taraba"
 replace country="Uganda" if country=="UG"
+
+*Graph 1*
+preserve
 
 collapse (mean) `measure_list' [pw=FQweight], by(country)
 foreach measure in `measure_list' {
@@ -336,25 +409,6 @@ restore
 
 *Graph 2*
 preserve
-drop if country=="KE"
-drop if country=="BF"
-
-replace country="Burkina Faso" if country=="BF_R5"
-replace country="DRC Kinshasa" if country=="CD_Kinshasa"
-replace country="DRC Kongo Central" if country=="CD_CK"
-replace country="Ethiopia" if country=="ET"
-replace country="Ghana" if country=="GH"
-replace country="India Rajasthan" if country=="India_Rajasthan"
-replace country="Kenya" if country=="KE_R6"
-replace country="Niger" if country=="NE"
-replace country="Nigeria Anambra" if country=="NG_Anambra"
-replace country="Nigeria Kaduna" if country=="NG_Kadune"
-replace country="Nigeria Kano" if country=="NG_Kano"
-replace country="Nigeria Lagos" if country=="NG_Lagos"
-replace country="Nigeria Nasarawa" if country=="NG_Nasarawa"
-replace country="Nigeria Rivers" if country=="NG_Rivers"
-replace country="Nigera Taraba" if country=="NG_Taraba"
-replace country="Uganda" if country=="UG"
 
 collapse (mean) `measure_list' mcp [pw=FQweight], by(country)
 foreach measure in `measure_list' {
