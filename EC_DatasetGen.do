@@ -12,6 +12,7 @@ local c_today= "`today'"
 global date=subinstr("`c_today'", " ", "",.)
 
 local datadir "/Users/ealarson/Documents/RandomCoding/Emergency_Contraception/Datasets"
+global ECfolder "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis"
 
 
 cd "$ECfolder"
@@ -36,13 +37,13 @@ use "`datadir'/Nigeria_National/NG_NatR4.dta"
 	save "`datadir'/EC/EC_v2.dta", replace
 
 foreach dataset in ///
-	"`datadir'/DRC_BC/DC_BCR5.dta" ///
-	"`datadir'/DRC_Kinshasa/DC_KinR5.dta" ///
-	"`datadir'/Ethiopia/ETR4.dta" ///
-	"`datadir'/Ghana/GHR4.dta" ///
-	"`datadir'/Niger_National/NE_NatR2.dta" ///
-	"`datadir'/Rajasthan/INR1.dta" ///
-	"`datadir'/Uganda/UGR4.dta" {
+	"`datadir'/CoteDIvoire/CDR1.dta" ///
+	"`datadir'/DRC_KC/DC_KCR6.dta" ///
+	"`datadir'/DRC_Kinshasa/DC_KinR6.dta" ///
+	"`datadir'/Ethiopia/ETR5.dta" ///
+	"`datadir'/Ghana/GHR5.dta" ///
+	"`datadir'/Niger_National/NE_NatR4.dta" ///
+	"`datadir'/Rajasthan/INR2.dta" {
 	preserve
 		use `dataset'
 		pmasample
@@ -68,10 +69,6 @@ foreach dataset in ///
 					current_or_recent_user current_recent_method current_recent_methodnum  ///
 					FQweight* cp mcp wealth* 
 				}
-			/*if country=="UG" {
-				replace strata="urban" if strata==1
-				replace strata="rural" if strata==2
-				}*/
 			}
 		tempfile dataset
 		save `dataset', replace
@@ -82,7 +79,8 @@ foreach dataset in ///
 	
 foreach dataset in ///
 	"`datadir'/BurkinaFaso/BFR5.dta" ///
-	"`datadir'/Kenya/KER6.dta" {
+	"`datadir'/Kenya/KER6.dta" ///
+	"`datadir'/Uganda/UGR6.dta" {
 	preserve
 		use `dataset'
 		pmasample
@@ -424,6 +422,124 @@ foreach dataset in ///
 			order EA_ID, after(EA)
 			drop EA
 			}
+		if country=="UG" {
+			replace EA="3453" if EA=="abyongdyang_c"
+			replace EA="3866" if EA=="acutanena_b"
+			replace EA="3757" if EA=="agonyo_i_a"
+			replace EA="3224" if EA=="agoro_central_a"
+			replace EA="3627" if EA=="akwera"
+			replace EA="3300" if EA=="aloi"
+			replace EA="3292" if EA=="apotkitoo_b"
+			replace EA="3167" if EA=="ariabo"
+			replace EA="3635" if EA=="baronger"
+			replace EA="3108" if EA=="buchiwedo_a"
+			replace EA="3045" if EA=="bugalo"
+			replace EA="3415" if EA=="bugambira_a"
+			replace EA="3978" if EA=="bugonga_e"
+			replace EA="3099" if EA=="bugorora"
+			replace EA="3382" if EA=="bukasa_a"
+			replace EA="3813" if EA=="bulange_central_a"
+			replace EA="3714" if EA=="bulegeya_kinataka_lc_a"
+			replace EA="3674" if EA=="bumusomi_ii_a"
+			replace EA="3381" if EA=="busamu_camp_c"
+			replace EA="3376" if EA=="busegula_naisembe_a"
+			replace EA="3061" if EA=="butaserwa_a"
+			replace EA="3042" if EA=="bwera_a"
+			replace EA="3069" if EA=="central_c_h"
+			replace EA="3585" if EA=="coo_rom"
+			replace EA="3474" if EA=="coopil_b"
+			replace EA="3057" if EA=="dasa"
+			replace EA="3811" if EA=="go_down_ii_b"
+			replace EA="3393" if EA=="good_hope_zone_d"
+			replace EA="3015" if EA=="gwetom_a"
+			replace EA="3390" if EA=="kagandu_a"
+			replace EA="3707" if EA=="kajiriwar"
+			replace EA="3404" if EA=="kakiika_i"
+			replace EA="3505" if EA=="kakooge_lc_1_a"
+			replace EA="3040" if EA=="kakunyumunyu_b"
+			replace EA="3959" if EA=="kamacha_a"
+			replace EA="3466" if EA=="kamoru_south_a"
+			replace EA="3966" if EA=="kamurara_ii"
+			replace EA="3073" if EA=="kanyale"
+			replace EA="3831" if EA=="kasejere"
+			replace EA="3252" if EA=="kawaala_i_zone_j"
+			replace EA="3324" if EA=="kayunga"
+			replace EA="3184" if EA=="kemihoko"
+			replace EA="3812" if EA=="kibingo"
+			replace EA="3941" if EA=="kifuruta_ii_a"
+			replace EA="3669" if EA=="kigugo"
+			replace EA="3245" if EA=="kikoto"
+			replace EA="3140" if EA=="kimigi_b"
+			replace EA="3515" if EA=="kinawataka_e"
+			replace EA="3905" if EA=="kirombe_b_c"
+			replace EA="3897" if EA=="kiryangobe_a"
+			replace EA="3023" if EA=="kisenyi_ii_i"
+			replace EA="3874" if EA=="kitagata_trc"
+			replace EA="3853" if EA=="kitambogo_b"
+			replace EA="3506" if EA=="kitega_c"
+			replace EA="3645" if EA=="kiyanja_a"
+			replace EA="3655" if EA=="kooki_d_h"
+			replace EA="3428" if EA=="kotiokot_a"
+			replace EA="3086" if EA=="kwata_b"
+			replace EA="3863" if EA=="kyamusimba"
+			replace EA="3315" if EA=="kyarugamba"
+			replace EA="3926" if EA=="lokwakais_a"
+			replace EA="3403" if EA=="lomachariwaret_a"
+			replace EA="3705" if EA=="loreng_a"
+			replace EA="3018" if EA=="lufudu_a"
+			replace EA="3531" if EA=="lufula_a"
+			replace EA="3323" if EA=="lwanika_b_lc1_b"
+			replace EA="3639" if EA=="makindye_division_central_a"
+			replace EA="3610" if EA=="mbogo_g"
+			replace EA="3858" if EA=="mirimu_c"
+			replace EA="3653" if EA=="moru_a"
+			replace EA="3839" if EA=="mpanga_mushanju"
+			replace EA="3437" if EA=="mpangati_b"
+			replace EA="3651" if EA=="mugoma_a"
+			replace EA="3176" if EA=="mugongo_a_lc_1_k"
+			replace EA="3702" if EA=="mugowa_zone_d"
+			replace EA="3732" if EA=="muliki"
+			replace EA="3559" if EA=="mulima"
+			replace EA="3239" if EA=="mushembe"
+			replace EA="3784" if EA=="nachua"
+			replace EA="3540" if EA=="nakibizzi_c"
+			replace EA="3640" if EA=="nakiyanja_d"
+			replace EA="3233" if EA=="namayemba_b_lc_1_a"
+			replace EA="3756" if EA=="namazaba"
+			replace EA="3137" if EA=="namungalwe_rural_a"
+			replace EA="3931" if EA=="namunyumya_a_a"
+			replace EA="3925" if EA=="napetaoi"
+			replace EA="3511" if EA=="nkandwa_a_a"
+			replace EA="3794" if EA=="nkere_a"
+			replace EA="3909" if EA=="nkyamani"
+			replace EA="3522" if EA=="nyakatooke_ii"
+			replace EA="3728" if EA=="oparomo"
+			replace EA="3668" if EA=="opungo_a"
+			replace EA="3053" if EA=="osau"
+			replace EA="3686" if EA=="otumpili_north"
+			replace EA="3211" if EA=="pengabe_society"
+			replace EA="3717" if EA=="robuyi_a"
+			replace EA="3731" if EA=="rubumba"
+			replace EA="3735" if EA=="ruyonza_i"
+			replace EA="3203" if EA=="rwaburegyeya_a"
+			replace EA="3436" if EA=="rwekubo"
+			replace EA="3041" if EA=="rwengoma_b_iii"
+			replace EA="3507" if EA=="shikhuyu_b"
+			replace EA="3421" if EA=="sinyani_c"
+			replace EA="3210" if EA=="siriba_c"
+			replace EA="3826" if EA=="siwa_b_a"
+			replace EA="3281" if EA=="tangiriza"
+			replace EA="3974" if EA=="upper_mawanga_zone_c"
+			replace EA="3973" if EA=="zone_4_c"
+			replace EA="3056" if EA=="zone_8_t"
+			replace EA="3246" if EA=="zone_vi_b"
+			* new in R6
+			replace EA="3896" if EA=="kokeris"
+			destring EA, generate(EA_ID)
+			order EA_ID, after(EA)
+			label var EA_ID "EA ID (random)"
+			drop EA
+			}
 		tempfile dataset
 		save `dataset', replace
 	restore
@@ -444,6 +560,7 @@ drop FQmetainstanceID
 tostring EA_ID, replace
 replace EA=EA_ID if EA==""
 drop EA_ID
+replace country="CdI" if country=="Cote D'Ivoire"
 	
 save "`datadir'/ECdata_v2.dta", replace
 		
