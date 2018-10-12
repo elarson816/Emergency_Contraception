@@ -20,6 +20,7 @@ local country_list2 "BF KE UG"
 
 local measure_list "EC_measure1 EC_measure2 EC_measure3 EC_measure4"
 local measure_list2 "EC_measure1 EC_measure4 EC_measure5"
+local measure_list3 "EC_measure1 EC_measure2 EC_measure3 EC_measure4 EC_measure5"
 
 local subgroup_list "married umsexactive u20 u25"
 
