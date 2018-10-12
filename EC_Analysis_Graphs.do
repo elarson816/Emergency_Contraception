@@ -163,6 +163,7 @@ use "data_with_ci.dta"
 
 
 *Graph 1
+
 collapse (mean) `measure_list' se* lb* ub* [pw=FQweight], by(country_v2)
 foreach measure in `measure_list' {
 	gen `measure'_percent=`measure'*100
@@ -183,31 +184,48 @@ twoway ///
 		lcolor(navy) ///
 	legend(off) ///
 	title("Measure 1 by country") subtitle("Percent Estimate and 95% Confidence Interval")
-*/
 
+
+*Graph 2
+
+foreach country in 1 8 17 {
+	preserve
+	keep if country_v2==`country'
+	expand 4 in 1
 	
-twoway ///
-	scatter EC_measure1_percent measures if country_v2==8, ///
-		mcolor(purple) || ///
-	rcap lb_EC_measure1_percent ub_EC_measure1_percent measures if country_v2==8, ///
-		lcolor(purple) || ///
-	scatter EC_measure2_percent measures if country_v2==8, ///
-		mcolor(purple) || ///
-	rcap lb_EC_measure2_percent ub_EC_measure2_percent measures if country_v2==8, ///
-		lcolor(purple) || ///
-	scatter EC_measure3_percent measures if country_v2==8, ///
-		mcolor(purple) || ///
-	rcap lb_EC_measure3_percent ub_EC_measure3_percent measures if country_v2==8, ///
-		lcolor(purple) || ///
-	scatter EC_measure4_percent measures if country_v2==8, ///
-		mcolor(purple) || ///
-	rcap lb_EC_measure4_percent ub_EC_measure4_percent measures if country_v2==8, ///
-		lcolor(purple) ///
-	ylabel(0(1)4) ytick(0(.5)4) ytitle("Percent") ///
-	xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") ///
-	legend(off) ///
-	title("Kenya: Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
+	local country: label country_label `country'
+	
+	gen measures=1
+		replace measures=2 in 2
+		replace measures=3 in 3
+		replace measures=4 in 4
+	gen EC_measure=.
+		replace EC_measure=EC_measure1_percent if measures==1
+		replace EC_measure=EC_measure2_percent if measures==2
+		replace EC_measure=EC_measure3_percent if measures==3
+		replace EC_measure=EC_measure4_percent if measures==4
+	gen EC_measure_ub=.
+		replace EC_measure_ub=ub_EC_measure1_percent if measures==1
+		replace EC_measure_ub=ub_EC_measure2_percent if measures==2
+		replace EC_measure_ub=ub_EC_measure3_percent if measures==3
+		replace EC_measure_ub=ub_EC_measure4_percent if measures==4	
+	gen EC_measure_lb=.
+		replace EC_measure_lb=lb_EC_measure1_percent if measures==1
+		replace EC_measure_lb=lb_EC_measure2_percent if measures==2
+		replace EC_measure_lb=lb_EC_measure3_percent if measures==3
+		replace EC_measure_lb=lb_EC_measure4_percent if measures==4	
 
-
+	twoway ///
+		scatter EC_measure measures, ///
+			mcolor(purple) || ///
+		rcap EC_measure_ub EC_measure_lb measures, ///
+			lcolor(purple) ///
+		ylabel(0(1)4) ytick(0(.5)4) ytitle("Percent") ///
+		xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") xtitle("") ///
+		legend(off) ///
+		title("`country': Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
 		
+	restore
+	}
+	
 		
