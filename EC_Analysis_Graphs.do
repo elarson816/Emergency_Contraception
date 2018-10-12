@@ -122,11 +122,8 @@ foreach measure in `measure_list' {
 		gen lb_`subgroup'_`measure'=.
 		gen ub_`subgroup'_`measure'=.
 		gen se_`subgroup'_`measure'=.
-		
-		gen `subgroup'_`measure'=1 if `subgroup'==1 & `measure'==1
 		}
 	}
-
 
 foreach measure in `measure_list' {
 	foreach country in `country_list' {
@@ -181,35 +178,27 @@ label define country_label 1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4
 encode country, gen(country_v2) label(country_label)
 
 save "data_with_ci.dta", replace
-*/
+
+
 use "data_with_ci.dta"
 
 *Graph 1
 
+tempfile graph1_2
 collapse (mean) `measure_list' ///
 				se* lb* ub*  ///
-				married_EC_measure1 married_EC_measure2 married_EC_measure3 married_EC_measure4 ///
-				umsexactive_EC_measure1 umsexactive_EC_measure2 umsexactive_EC_measure3 umsexactive_EC_measure4 ///
-				u20_EC_measure1 u20_EC_measure2 u20_EC_measure3 u20_EC_measure4 ///
-				u25_EC_measure1 u25_EC_measure2 u25_EC_measure3 u25_EC_measure4 ///
-				[pw=FQweight], by(country_v2)
-				
+				[pw=FQweight], by(country_v2)			
 				
 foreach measure in `measure_list' {
 	gen `measure'_percent=`measure'*100
 	gen se_`measure'_percent=se_`measure'*100
 	gen lb_`measure'_percent=lb_`measure'*100
 	gen ub_`measure'_percent=ub_`measure'*100
-	
-	foreach subgroup in `subgroup_list' {
-		gen `subgroup'_`measure'_perc=`subgroup'_`measure'*100
-		gen se_`subgroup'_`measure'_perc=se_`subgroup'_`measure'*100
-		gen lb_`subgroup'_`measure'_perc=lb_`subgroup'_`measure'*100
-		gen ub_`subgroup'_`measure'_perc=ub_`subgroup'_`measure'*100
-		}
 	}
 
-/*	
+save `graph1_2', replace
+use `graph1_2', clear	
+
 twoway ///
 	scatter EC_measure1_percent country_v2, ///
 		mcolor(navy) || ///
@@ -258,15 +247,138 @@ foreach country in 1 8 17 {
 			mcolor(navy) || ///
 		rcap EC_measure_ub EC_measure_lb measures, ///
 			lcolor(navy) ///
-		ylabel(0(1)4) ytick(0(.5)4) ytitle("Percent") ///
+		ylabel(0(.5)2.5) ytitle("Percent") ///
 		xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") xtitle("") ///
 		legend(off) ///
 		title("`country': Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
 		
 	restore
 	}
-*/
 
+*/	
+use "data_with_ci.dta", clear
 
+*Graph 4
+
+tempfile all
+preserve
+collapse (mean) EC_measure1 ///
+				lb_EC_measure1 ub_EC_measure1 se_EC_measure1 ///
+				[pw=FQweight], by (country_v2)
+save `all', replace
+restore
+
+tempfile married
+preserve	
+collapse (mean) EC_measure1 ///
+				lb_married_EC_measure1 ub_married_EC_measure1 se_married_EC_measure1 ///
+				[pw=FQweight] if married==1, by(country_v2)
+	rename EC_measure1 EC_measure1_married
+	rename lb_married_EC_measure1 lb_EC_measure1_married
+	rename ub_married_EC_measure1 ub_EC_measure1_married
+	rename se_married_EC_measure1 se_EC_measure1_married	
+save `married', replace
+restore
+
+tempfile umsa
+preserve	
+collapse (mean) EC_measure1 ///
+				lb_umsexactive_EC_measure1 ub_umsexactive_EC_measure1 se_umsexactive_EC_measure1 ///
+				[pw=FQweight] if umsexactive==1, by(country_v2)
+	rename EC_measure1 EC_measure1_umsexactive
+	rename lb_umsexactive_EC_measure1 lb_EC_measure1_umsexactive
+	rename ub_umsexactive_EC_measure1 ub_EC_measure1_umsexactive
+	rename se_umsexactive_EC_measure1 se_EC_measure1_umsexactive	
+save `umsa', replace
+restore
+
+tempfile u20
+preserve	
+collapse (mean) EC_measure1 ///
+				lb_u20_EC_measure1 ub_u20_EC_measure1 se_u20_EC_measure1 ///
+				[pw=FQweight] if u20==1, by(country_v2)
+	rename EC_measure1 EC_measure1_u20
+	rename lb_u20_EC_measure1 lb_EC_measure1_u20
+	rename ub_u20_EC_measure1 ub_EC_measure1_u20
+	rename se_u20_EC_measure1 se_EC_measure1_u20	
+save `u20', replace
+restore
+
+tempfile u25
+preserve	
+collapse (mean) EC_measure1 ///
+				lb_u25_EC_measure1 ub_u25_EC_measure1 se_u25_EC_measure1 ///
+				[pw=FQweight] if u25==1, by(country_v2)
+	rename EC_measure1 EC_measure1_u25
+	rename lb_u25_EC_measure1 lb_EC_measure1_u25
+	rename ub_u25_EC_measure1 ub_EC_measure1_u25
+	rename se_u25_EC_measure1 se_EC_measure1_u25	
+save `u25', replace
+restore
+
+use `all', clear
+merge 1:1 country_v2 using `married', gen(married_merge)
+merge 1:1 country_v2 using `umsa', gen(umsa_merge)
+merge 1:1 country_v2 using `u20', gen(u20_merge)
+merge 1:1 country_v2 using `u25', gen(u25_merge)
+
+drop *merge
+
+gen EC_measure1_percent=EC_measure1*100
+gen se_EC_measure1_percent=se_EC_measure1*100
+gen lb_EC_measure1_percent=lb_EC_measure1*100
+gen ub_EC_measure1_percent=ub_EC_measure1*100
+
+foreach subgroup in `subgroup_list' {
+	gen EC_measure1_`subgroup'_perc=EC_measure1_`subgroup'*100
+	gen se_EC_measure1_`subgroup'_perc=se_EC_measure1_`subgroup'*100
+	gen lb_EC_measure1_`subgroup'_perc=lb_EC_measure1_`subgroup'*100
+	gen ub_EC_measure1_`subgroup'_perc=ub_EC_measure1_`subgroup'*100
+	}	
+	
+foreach country in 1 8 17 {
+	preserve
+	keep if country_v2==`country'
+
+	expand 5 in 1
+	local country: label country_label `country'
+	
+	gen measures=1
+		replace measures=2 in 2
+		replace measures=3 in 3
+		replace measures=4 in 4
+		replace measures=5 in 5
+	gen EC_measure=.
+		replace EC_measure=EC_measure1_percent if measures==1
+		replace EC_measure=EC_measure1_married_perc if measures==2
+		replace EC_measure=EC_measure1_umsexactive_perc if measures==3
+		replace EC_measure=EC_measure1_u20_perc if measures==4
+		replace EC_measure=EC_measure1_u25_perc if measures==5
+	gen EC_measure_ub=.
+		replace EC_measure_ub=ub_EC_measure1_percent if measures==1
+		replace EC_measure_ub=ub_EC_measure1_married_perc if measures==2
+		replace EC_measure_ub=ub_EC_measure1_umsexactive_perc if measures==3
+		replace EC_measure_ub=ub_EC_measure1_u20_perc if measures==4
+		replace EC_measure_ub=ub_EC_measure1_u25_perc if measures==5
+	gen EC_measure_lb=.
+		replace EC_measure_lb=lb_EC_measure1_percent if measures==1
+		replace EC_measure_lb=lb_EC_measure1_married_perc if measures==2
+		replace EC_measure_lb=lb_EC_measure1_umsexactive_perc if measures==3
+		replace EC_measure_lb=lb_EC_measure1_u20_perc if measures==4
+		replace EC_measure_lb=lb_EC_measure1_u25_perc if measures==5
+		
+	twoway ///
+		scatter EC_measure measures, ///
+			mcolor(navy) || ///
+		rcap EC_measure_ub EC_measure_lb measures, ///
+			lcolor(navy) ///
+		ylabel(0(1)5.5) ytick(0(.5)5.5) ytitle("Percent") ///
+		xlabel(1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25") xtitle("Measure 1") ///
+		legend(off) ///
+		title("`country': Measure 1 by subgroup") subtitle("Percent Estimate and 95% Confidence Interval")
+		
+	restore
+	}
+		
 	
 		
