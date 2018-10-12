@@ -211,6 +211,7 @@ twoway ///
 		lcolor(navy) ///
 	legend(off) ///
 	title("Measure 1 by country") subtitle("Percent Estimate and 95% Confidence Interval")
+graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph_1", replace
 
 
 *Graph 2
@@ -247,15 +248,18 @@ foreach country in 1 8 17 {
 			mcolor(navy) || ///
 		rcap EC_measure_ub EC_measure_lb measures, ///
 			lcolor(navy) ///
-		ylabel(0(.5)2.5) ytitle("Percent") ///
-		xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") xtitle("") ///
+		ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
+		xlabel(0.5(1)4.5) ///
+		xlabel(0.5 " " 1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4" 4.5 " ") xtitle("") ///
 		legend(off) ///
 		title("`country': Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_`country'", replace
 		
 	restore
 	}
-
-*/	
+*/
+	
 use "data_with_ci.dta", clear
 
 *Graph 4
@@ -373,9 +377,12 @@ foreach country in 1 8 17 {
 		rcap EC_measure_ub EC_measure_lb measures, ///
 			lcolor(navy) ///
 		ylabel(0(1)5.5) ytick(0(.5)5.5) ytitle("Percent") ///
-		xlabel(1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25") xtitle("Measure 1") ///
+		xlabel(.5(1)5.5) ///
+		xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("") ///
 		legend(off) ///
 		title("`country': Measure 1 by subgroup") subtitle("Percent Estimate and 95% Confidence Interval")
+		
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph4_`country'", replace
 		
 	restore
 	}
