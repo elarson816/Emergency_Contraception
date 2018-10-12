@@ -29,9 +29,9 @@ local excel_paper_2 "$resultsdir/ECAnalysis_PaperTablesv2_$date.xls"
 
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
-/*
-use "`datadir'/ECdata_v2.dta"
 
+use "`datadir'/ECdata_v2.dta"
+/*
 ********************************************************************************
 *Section A. Data Prep
 ********************************************************************************
@@ -117,6 +117,14 @@ foreach measure in `measure_list' {
 	gen se_`measure'=.
 	gen lb_`measure'=.
 	gen ub_`measure'=.
+	
+	foreach subgroup in `subgroup_list' {
+		gen lb_`subgroup'_`measure'=.
+		gen ub_`subgroup'_`measure'=.
+		gen se_`subgroup'_`measure'=.
+		
+		gen `subgroup'_`measure'=1 if `subgroup'==1 & `measure'==1
+		}
 	}
 
 
@@ -132,6 +140,21 @@ foreach measure in `measure_list' {
 		replace se_`measure'=`measure'_se_`country'[1,1] if country=="`country'"
 		}
 	}	
+	
+foreach measure in `measure_list' {
+	foreach country in `country_list' {
+		foreach subgroup in `subgroup_list' {
+			svy: prop `measure' if country=="`country'" & `subgroup'==1
+			matrix one=r(table)
+			matrix `measure'_lb_1_`subgroup'=one[5,2]
+			matrix `measure'_ub_2_`subgroup'=one[6,2]
+			matrix `measure'_se_3_`subgroup'=one[2,2]
+			replace lb_`subgroup'_`measure'=`measure'_lb_1_`subgroup'[1,1] if country=="`country'"
+			replace ub_`subgroup'_`measure'=`measure'_ub_2_`subgroup'[1,1] if country=="`country'"
+			replace se_`subgroup'_`measure'=`measure'_se_3_`subgroup'[1,1] if country=="`country'"
+			}
+		}
+	}
 	
 replace country="Burkina Faso" if country=="BF"
 replace country="DRC Kinshasa" if country=="CD_Kinshasa"
@@ -161,17 +184,32 @@ save "data_with_ci.dta", replace
 */
 use "data_with_ci.dta"
 
-
 *Graph 1
 
-collapse (mean) `measure_list' se* lb* ub* [pw=FQweight], by(country_v2)
+collapse (mean) `measure_list' ///
+				se* lb* ub*  ///
+				married_EC_measure1 married_EC_measure2 married_EC_measure3 married_EC_measure4 ///
+				umsexactive_EC_measure1 umsexactive_EC_measure2 umsexactive_EC_measure3 umsexactive_EC_measure4 ///
+				u20_EC_measure1 u20_EC_measure2 u20_EC_measure3 u20_EC_measure4 ///
+				u25_EC_measure1 u25_EC_measure2 u25_EC_measure3 u25_EC_measure4 ///
+				[pw=FQweight], by(country_v2)
+				
+				
 foreach measure in `measure_list' {
 	gen `measure'_percent=`measure'*100
 	gen se_`measure'_percent=se_`measure'*100
 	gen lb_`measure'_percent=lb_`measure'*100
 	gen ub_`measure'_percent=ub_`measure'*100
-	}
 	
+	foreach subgroup in `subgroup_list' {
+		gen `subgroup'_`measure'_perc=`subgroup'_`measure'*100
+		gen se_`subgroup'_`measure'_perc=se_`subgroup'_`measure'*100
+		gen lb_`subgroup'_`measure'_perc=lb_`subgroup'_`measure'*100
+		gen ub_`subgroup'_`measure'_perc=ub_`subgroup'_`measure'*100
+		}
+	}
+
+/*	
 twoway ///
 	scatter EC_measure1_percent country_v2, ///
 		mcolor(navy) || ///
@@ -217,9 +255,9 @@ foreach country in 1 8 17 {
 
 	twoway ///
 		scatter EC_measure measures, ///
-			mcolor(purple) || ///
+			mcolor(navy) || ///
 		rcap EC_measure_ub EC_measure_lb measures, ///
-			lcolor(purple) ///
+			lcolor(navy) ///
 		ylabel(0(1)4) ytick(0(.5)4) ytitle("Percent") ///
 		xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") xtitle("") ///
 		legend(off) ///
@@ -227,5 +265,8 @@ foreach country in 1 8 17 {
 		
 	restore
 	}
+*/
+
+
 	
 		
