@@ -29,6 +29,7 @@ local excel_paper_2 "$resultsdir/ECAnalysis_PaperTablesv2_$date.xls"
 
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
+/*
 use "`datadir'/ECdata_v2.dta"
 
 ********************************************************************************
@@ -118,8 +119,9 @@ foreach measure in `measure_list' {
 	gen ub_`measure'=.
 	}
 
-foreach country in `country_list' {
-	foreach measure in `measure_list' {
+
+foreach measure in `measure_list' {
+	foreach country in `country_list' {
 		svy: prop `measure' if country=="`country'"
 		matrix one=r(table)
 		matrix `measure'_lb_`country'=one[5,2]
@@ -129,9 +131,8 @@ foreach country in `country_list' {
 		replace ub_`measure'=`measure'_ub_`country'[1,1] if country=="`country'"
 		replace se_`measure'=`measure'_se_`country'[1,1] if country=="`country'"
 		}
-	}
+	}	
 	
-
 replace country="Burkina Faso" if country=="BF"
 replace country="DRC Kinshasa" if country=="CD_Kinshasa"
 replace country="DRC Kongo Central" if country=="CD_CK"
@@ -156,9 +157,13 @@ label define country_label 1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4
 	17 "Uganda"
 encode country, gen(country_v2) label(country_label)
 
+save "data_with_ci.dta", replace
+*/
+use "data_with_ci.dta"
+
 
 *Graph 1
-collapse (mean) `measure_list' [pw=FQweight], by(country_v2 se* lb* ub*)
+collapse (mean) `measure_list' se* lb* ub* [pw=FQweight], by(country_v2)
 foreach measure in `measure_list' {
 	gen `measure'_percent=`measure'*100
 	gen se_`measure'_percent=se_`measure'*100
@@ -170,7 +175,7 @@ twoway ///
 	scatter EC_measure1_percent country_v2, ///
 		mcolor(navy) || ///
 	rcap lb_EC_measure1_percent ub_EC_measure1_percent country_v2, ///
-		ylabel(0(0.5)4) ytitle("Percent") ///
+		ylabel(0(1)4) ytick(0(.5)4) ytitle("Percent") ///
 		xlabel(1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4 "DRC Kongo Central" 5 "Ethiopia" ///
 			6 "Ghana" 7 "India Rajasthan" 8 "Kenya" 9 "Niger" 10 "Nigeria Anambra" 11 "Nigeria Kaduna" ///
 			12 "Nigeria Kano" 13 "Nigeria Lagos" 14 "Nigeria Nasarawa" 15 "Nigeria Rivers" 16 "Nigeria Taraba" ///
@@ -178,20 +183,28 @@ twoway ///
 		lcolor(navy) ///
 	legend(off) ///
 	title("Measure 1 by country") subtitle("Percent Estimate and 95% Confidence Interval")
-	/*
+*/
+
+	
 twoway ///
-	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+	scatter EC_measure1_percent measures if country_v2==8, ///
 		mcolor(purple) || ///
-	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+	rcap lb_EC_measure1_percent ub_EC_measure1_percent measures if country_v2==8, ///
+		lcolor(purple) || ///
+	scatter EC_measure2_percent measures if country_v2==8, ///
 		mcolor(purple) || ///
-	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+	rcap lb_EC_measure2_percent ub_EC_measure2_percent measures if country_v2==8, ///
+		lcolor(purple) || ///
+	scatter EC_measure3_percent measures if country_v2==8, ///
 		mcolor(purple) || ///
-	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+	rcap lb_EC_measure3_percent ub_EC_measure3_percent measures if country_v2==8, ///
+		lcolor(purple) || ///
+	scatter EC_measure4_percent measures if country_v2==8, ///
 		mcolor(purple) || ///
-	rcap lb_percent ub_percent country_v2 if country_v2==8, ///
-		ylabel(0(0.5)4) ytitle("Percent") ///
-		xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") ///
+	rcap lb_EC_measure4_percent ub_EC_measure4_percent measures if country_v2==8, ///
 		lcolor(purple) ///
+	ylabel(0(1)4) ytick(0(.5)4) ytitle("Percent") ///
+	xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") ///
 	legend(off) ///
 	title("Kenya: Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
 
