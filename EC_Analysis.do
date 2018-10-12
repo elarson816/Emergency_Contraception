@@ -110,6 +110,8 @@ capture confirm strata
 ********************************************************************************
 *Section B. Background Characteristics
 ********************************************************************************
+/*
+
 tabout country using "`tabout_excel'"
 
 preserve
@@ -366,27 +368,28 @@ order EC_measure4_percent_u25, after(EC_measure1_percent_u25)
 order EC_measure5_percent_u25, after(EC_measure4_percent_u25)
 export excel using "`excel_paper_2'", sheet("Measure5_u25_means") first(variable)
 restore
-
+*/
 
 ********************************************************************************
 *Section D. Graphs
 ********************************************************************************
-
+/*
 replace country="Burkina Faso" if country=="BF"
 replace country="DRC Kinshasa" if country=="CD_Kinshasa"
 replace country="DRC Kongo Central" if country=="CD_CK"
+replace country="Cote d'Ivoire" if country=="CdI"
 replace country="Ethiopia" if country=="ET"
 replace country="Ghana" if country=="GH"
 replace country="India Rajasthan" if country=="India_Rajasthan"
 replace country="Kenya" if country=="KE"
 replace country="Niger" if country=="NE"
 replace country="Nigeria Anambra" if country=="NG_Anambra"
-replace country="Nigeria Kaduna" if country=="NG_Kadune"
+replace country="Nigeria Kaduna" if country=="NG_Kaduna"
 replace country="Nigeria Kano" if country=="NG_Kano"
 replace country="Nigeria Lagos" if country=="NG_Lagos"
 replace country="Nigeria Nasarawa" if country=="NG_Nasarawa"
 replace country="Nigeria Rivers" if country=="NG_Rivers"
-replace country="Nigera Taraba" if country=="NG_Taraba"
+replace country="Nigeria Taraba" if country=="NG_Taraba"
 replace country="Uganda" if country=="UG"
 
 *Graph 1*
@@ -399,13 +402,26 @@ foreach measure in `measure_list' {
 	}
 drop `measure_list'
 twoway ///
-	scatter EC_measure2_diff_measure1 EC_measure3_diff_measure1 EC_measure4_diff_measure1 EC_measure1_percent, ///
-	ylabel(0(.2)1) ymtick(0(.1)1) ytitle("Percentage point difference with measure 1") ysize(7) /// 
-	xlabel(0(.4)2.8) xmtick(0(.1)2.8) xtitle("Measure 1 by country") xsize(10) ///
-	msize(vsmall vsmall vsmall) mlabel(country country country) mlabsize(vsmall vsmall vsmall) msymbol(square circle triangle) ///
-	legend(rows(1)) legend(size(2))
+	lfitci EC_measure2_diff_measure1 EC_measure1_percent, lcolor(blue) acolor(ltblue%10) || ///
+	scatter EC_measure2_diff_measure1 EC_measure1_percent, /// 
+		mcolor(blue) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(blue) msymbol(square) || ///
+	lfitci EC_measure3_diff_measure1 EC_measure1_percent, lcolor(purple) acolor(lavender%5) || ///
+	scatter EC_measure3_diff_measure1 EC_measure1_percent, ///
+		mcolor(purple) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(purple) msymbol(circle) || ///
+	lfitci EC_measure4_diff_measure1 EC_measure1_percent, lcolor(gs7) acolor(gs7%5) || ///
+	scatter EC_measure4_diff_measure1 EC_measure1_percent, ///
+		mcolor(gs7) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(gs7) msymbol(triangle) ///
+	ylabel(0(.2)1) ymtick(0(.1)1) ytitle("Percentage Point") ysize(7) /// 
+	xlabel(0(.4)2.8) xmtick(0(.1)2.8) xtitle("Measure 1 By Country") xsize(10) ///
+	legend(label(1 "Measure 2, 95% CI") label(4 "Measure 3, 95% CI") label (7 "Measure 4, 95% CI")) ///
+	legend(label(2 "Measure 2 Fitted Value") label(5 "Measure 3 Fitted Value") label(8 "Measure 4 Fitted Value")) ///
+	legend(label(3 "Measure 2") label(6 "Measure 3") label(9 "Measure 4")) ///
+	legend(rows(3) size(small)) ///
+	title("Percentage point difference with Measure 1 by Country") subtitle("Measures 2, 3 and 4; Fitted lines; and 95% CI")
+	
 graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis/Tabout/EC_Graph1", as(pdf) replace
 restore
+
 
 *Graph 2*
 preserve
@@ -416,14 +432,113 @@ foreach measure in `measure_list' {
 	}
 drop `measure_list'
 twoway ///
-	scatter EC_measure1_percent EC_measure2_percent EC_measure3_percent EC_measure4_percent mcp, ///
-	ylabel(0(.4)2.4) ymtick(0(.2)2.4) ytitle("Measures 1, 2, 3 and 4 (%)") ///
+	lfitci EC_measure1_percent mcp, lcolor(red) acolor(pink%5) || ///
+	scatter EC_measure1_percent mcp, ///
+		mcolor(red) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(red) msymbol(diamond) || ///
+	lfitci EC_measure2_percent mcp, lcolor(blue) acolor(ltblue%10) || ///
+	scatter EC_measure2_percent mcp, ///
+		mcolor(blue) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(blue) msymbol(square) || ///
+	lfitci EC_measure3_percent mcp, lcolor(purple) acolor(lavender%5) || ///
+	scatter EC_measure3_percent mcp, ///
+		mcolor(purple) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(purple) msymbol(circle) || ///
+	lfitci EC_measure4_percent mcp, lcolor(gs7) acolor(gs7%5) || ///
+	scatter EC_measure4_percent mcp, ///	
+		mcolor(gs7) msize(vsmall) mlabel(country) mlabsize(vsmall) mlabcolor(gs7) msymbol(triangle) ///
+	ylabel(0(.4)2.4) ymtick(0(.2)2.4) ytitle("Percent") ///
 	xlabel(0(.2).6) xmtick(0(.1).6) xtitle("MCP by country") ///
-	msize(vsmall vsmall vsmall vsmall) mlabel(country country country country) mlabsize(vsmall vsmall vsmall vsmall) msymbol(square circle triangle diamond) ///
-	legend(rows(1)) legend(size(2))
+	legend(label(1 "Measure 1, 95% CI") label(4 "Measure 2, 95% CI") label(7 "Measure 3, 95% CI") label(10 "Measure 4, 95% CI")) ///
+	legend(label(2 "Measure 1 Fitted Value") label(5 "Measure 2 Fitted Value") label(8 "Measure 3 Fitted Value") label(11 "Measure 4 Fitted Value")) ///
+	legend(label(3 "Measure 1") label(6 "Measure 2") label(9 "Measure 3") label(12 "Measure 4")) ///
+	legend(rows(4) size(vsmall)) ///
+	title("Emergency Contraception use and" "Modern Contraceptive Prevalence Rate by Country") subtitle("Measures 1, 2, 3 and 4; Fitted lines, and 95% CI")
 graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/EC_Analysis/Tabout/EC_Graph2", as(pdf) replace
 restore
 
+*/
+********************************************************************************
+*Section E. New Graphs
+********************************************************************************
+*Graph Prep
+foreach measure in `measure_list' {
+	gen se_`measure'=.
+	gen lb_`measure'=.
+	gen ub_`measure'=.
+	}
+
+foreach country in `country_list' {
+	foreach measure in `measure_list' {
+		svy: prop `measure' if country=="`country'"
+		matrix one=r(table)
+		matrix `measure'_lb_`country'=one[5,2]
+		matrix `measure'_ub_`country'=one[6,2]
+		matrix `measure'_se_`country'=one[2,2]
+		replace lb_`measure'=`measure'_lb_`country'[1,1] if country=="`country'"
+		replace ub_`measure'=`measure'_ub_`country'[1,1] if country=="`country'"
+		replace se_`measure'=`measure'_se_`country'[1,1] if country=="`country'"
+		}
+	}
+	
+
+replace country="Burkina Faso" if country=="BF"
+replace country="DRC Kinshasa" if country=="CD_Kinshasa"
+replace country="DRC Kongo Central" if country=="CD_CK"
+replace country="Cote d'Ivoire" if country=="CdI"
+replace country="Ethiopia" if country=="ET"
+replace country="Ghana" if country=="GH"
+replace country="India Rajasthan" if country=="India_Rajasthan"
+replace country="Kenya" if country=="KE"
+replace country="Niger" if country=="NE"
+replace country="Nigeria Anambra" if country=="NG_Anambra"
+replace country="Nigeria Kaduna" if country=="NG_Kaduna"
+replace country="Nigeria Kano" if country=="NG_Kano"
+replace country="Nigeria Lagos" if country=="NG_Lagos"
+replace country="Nigeria Nasarawa" if country=="NG_Nasarawa"
+replace country="Nigeria Rivers" if country=="NG_Rivers"
+replace country="Nigeria Taraba" if country=="NG_Taraba"
+replace country="Uganda" if country=="UG"
+
+label define country_label 1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4 "DRC Kongo Central" 5 "Ethiopia" ///
+	6 "Ghana" 7 "India Rajasthan" 8 "Kenya" 9 "Niger" 10 "Nigeria Anambra" 11 "Nigeria Kaduna" ///
+	12 "Nigeria Kano" 13 "Nigeria Lagos" 14 "Nigeria Nasarawa" 15 "Nigeria Rivers" 16 "Nigeria Taraba" ///
+	17 "Uganda"
+encode country, gen(country_v2) label(country_label)
 
 
+*Graph 1
+collapse (mean) `measure_list' [pw=FQweight], by(country_v2 se* lb* ub*)
+foreach measure in `measure_list' {
+	gen `measure'_percent=`measure'*100
+	gen se_`measure'_percent=se_`measure'*100
+	gen lb_`measure'_percent=lb_`measure'*100
+	gen ub_`measure'_percent=ub_`measure'*100
+	}
+	
+twoway ///
+	scatter EC_measure1_percent country_v2, ///
+		mcolor(navy) || ///
+	rcap lb_EC_measure1_percent ub_EC_measure1_percent country_v2, ///
+		ylabel(0(0.5)4) ytitle("Percent") ///
+		xlabel(1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4 "DRC Kongo Central" 5 "Ethiopia" ///
+			6 "Ghana" 7 "India Rajasthan" 8 "Kenya" 9 "Niger" 10 "Nigeria Anambra" 11 "Nigeria Kaduna" ///
+			12 "Nigeria Kano" 13 "Nigeria Lagos" 14 "Nigeria Nasarawa" 15 "Nigeria Rivers" 16 "Nigeria Taraba" ///
+			17 "Uganda", angle(45) labsize(small)) ///
+		lcolor(navy) ///
+	legend(off) ///
+	title("Measure 1 by country") subtitle("Percent Estimate and 95% Confidence Interval")
+	/*
+twoway ///
+	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+		mcolor(purple) || ///
+	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+		mcolor(purple) || ///
+	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+		mcolor(purple) || ///
+	scatter EC_measure1_percent country_v2 if country_v2==8, ///
+		mcolor(purple) || ///
+	rcap lb_percent ub_percent country_v2 if country_v2==8, ///
+		ylabel(0(0.5)4) ytitle("Percent") ///
+		xlabel(1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4") ///
+		lcolor(purple) ///
+	legend(off) ///
+	title("Kenya: Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
 
