@@ -29,9 +29,9 @@ local excel_paper_2 "$resultsdir/ECAnalysis_PaperTablesv2_$date.xls"
 
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
-
-use "`datadir'/ECdata_v2.dta"
 /*
+use "`datadir'/ECdata_v2.dta"
+
 ********************************************************************************
 *Section A. Data Prep
 ********************************************************************************
@@ -178,7 +178,7 @@ label define country_label 1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4
 encode country, gen(country_v2) label(country_label)
 
 save "data_with_ci.dta", replace
-
+*/
 
 use "data_with_ci.dta"
 
@@ -243,22 +243,57 @@ foreach country in 1 8 17 {
 		replace EC_measure_lb=lb_EC_measure3_percent if measures==3
 		replace EC_measure_lb=lb_EC_measure4_percent if measures==4	
 
-	twoway ///
-		scatter EC_measure measures, ///
-			mcolor(navy) || ///
-		rcap EC_measure_ub EC_measure_lb measures, ///
-			lcolor(navy) ///
-		ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
-		xlabel(0.5(1)4.5) ///
-		xlabel(0.5 " " 1 "Measure 1" 2 "Measure 2" 3 "Measure 3" 4 "Measure 4" 4.5 " ") xtitle("") ///
-		legend(off) ///
-		title("`country': Measures 1 - 4") subtitle("Percent Estimate and 95% Confidence Interval")
+	if country_v2==1 {	
+		twoway ///
+			scatter EC_measure measures, ///
+				mcolor(navy) || ///
+			rcap EC_measure_ub EC_measure_lb measures, ///
+				lcolor(navy) ///
+			ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
+			xlabel(0.5(1)4.5) ///
+			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Burkina Faso") ///
+			legend(off)
+		}
 	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_`country'", replace
+	if country_v2==8 {
+		twoway ///
+			scatter EC_measure measures, ///
+				mcolor(navy) || ///
+			rcap EC_measure_ub EC_measure_lb measures, ///
+				lcolor(navy) ///
+			ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
+			xlabel(0.5(1)4.5) ///
+			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Kenya") ///
+			legend(off)
+		}
 		
+	if country_v2==17 {
+		twoway ///
+			scatter EC_measure measures, ///
+				mcolor(navy) || ///
+			rcap EC_measure_ub EC_measure_lb measures, ///
+				lcolor(navy) ///
+			ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
+			xlabel(0.5(1)4.5) ///
+			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Uganda") ///
+			legend(off)
+		}
+
+
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_`country'", replace
+	
+	
 	restore
 	}
-*/
+
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_Burkina Faso" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_Kenya" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_Uganda", ///
+	rows(1) xsize(10) ///
+	ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_combined", replace
+/*
 	
 use "data_with_ci.dta", clear
 
