@@ -178,8 +178,8 @@ label define country_label 1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4
 encode country, gen(country_v2) label(country_label)
 
 save "data_with_ci.dta", replace
-
 */
+
 use "data_with_ci.dta"
 
 *Graph 1
@@ -210,7 +210,7 @@ twoway ///
 			17 "Uganda", angle(45) labsize(small)) ///
 		lcolor(navy) ///
 	legend(off) ///
-	title("Measure 1 by country") subtitle("Percent Estimate and 95% Confidence Interval")
+	title("Definition 1 by Geography") subtitle("Percent Estimate and 95% Confidence Interval")
 graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph_1", replace
 
 
@@ -293,11 +293,31 @@ graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_Genera
 	ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
 	
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_combined", replace
-/*
+
+*/	
+*Graph 3
 	
 use "data_with_ci.dta", clear
 
+collapse (mean) `measure_list' [pw=FQweight], by(country)
+foreach measure in `measure_list' {
+	gen `measure'_percent=`measure'*100
+	bysort country: gen `measure'_diff_measure1=`measure'_percent-EC_measure1_percent
+	}
+
+graph ///
+	box EC_measure2_diff_measure1 EC_measure3_diff_measure1 EC_measure4_diff_measure1, ///
+	box(1, color(edkblue)) box(2, color(purple*2)) box(3, color(blue*5)) ///
+	ytitle("Percentage Point") ///
+	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") rows(1)) ///
+	title("Percentage Point Increase from Definition 1") subtitle("Aggregation over 17 Geographies")
+
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph3", replace
+
 *Graph 4
+
+use "data_with_ci.dta", clear
+
 
 tempfile all
 preserve
@@ -455,6 +475,4 @@ graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_Genera
 	
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph4_combined", replace
 
-		
-	REMEMBER TO REMOVE X AXIS TICKS ON GRAPH 2 AND 4
-		
+				
