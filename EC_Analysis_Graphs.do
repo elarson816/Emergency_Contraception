@@ -179,7 +179,7 @@ encode country, gen(country_v2) label(country_label)
 
 save "data_with_ci.dta", replace
 
-
+*/
 use "data_with_ci.dta"
 
 *Graph 1
@@ -250,7 +250,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor(navy) ///
 			ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
-			xlabel(0.5(1)4.5) ///
+			xlabel(0.5(1)4.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Burkina Faso") ///
 			legend(off)
 		}
@@ -262,7 +262,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor(navy) ///
 			ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
-			xlabel(0.5(1)4.5) ///
+			xlabel(0.5(1)4.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Kenya") ///
 			legend(off)
 		}
@@ -274,7 +274,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor(navy) ///
 			ylabel(0(.5)2.5) ytitle("Percent") ysize(4) ///
-			xlabel(0.5(1)4.5) ///
+			xlabel(0.5(1)4.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Uganda") ///
 			legend(off)
 		}
@@ -293,7 +293,7 @@ graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_Genera
 	ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
 	
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_combined", replace
-*/
+/*
 	
 use "data_with_ci.dta", clear
 
@@ -413,8 +413,8 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor(navy) ///
 			ylabel(0(1)5.5) ytick(0(.5)5.5) ytitle("Percent") ///
-			xlabel(.5(1)5.5) ///
-			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Burkina Faso") ///
+			xlabel(.5(1)5.5, noticks) ///
+			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small) angle(45)) xtitle("Burkina Faso") ///
 			legend(off)
 		}
 	
@@ -425,8 +425,8 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor(navy) ///
 			ylabel(0(1)5.5) ytick(0(.5)5.5) ytitle("Percent") ///
-			xlabel(.5(1)5.5) ///
-			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Kenya") ///
+			xlabel(.5(1)5.5, noticks) ///
+			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small) angle(45)) xtitle("Kenya") ///
 			legend(off)
 		}
 		
@@ -437,8 +437,8 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor(navy) ///
 			ylabel(0(1)5.5) ytick(0(.5)5.5) ytitle("Percent") ///
-			xlabel(.5(1)5.5) ///
-			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Uganda") ///
+			xlabel(.5(1)5.5, noticks) ///
+			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small) angle(45)) xtitle("Uganda") ///
 			legend(off)
 		}
 		
@@ -456,5 +456,5 @@ graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_Genera
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph4_combined", replace
 
 		
-	REMEMBER TO REMOVE X AXIS TICKS ON GRAPH AND 4
+	REMEMBER TO REMOVE X AXIS TICKS ON GRAPH 2 AND 4
 		
