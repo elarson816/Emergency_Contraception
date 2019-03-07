@@ -29,9 +29,9 @@ local excel_paper_2 "$resultsdir/ECAnalysis_PaperTablesv2_$date.xls"
 
 cd "$ECfolder"
 log using "$ECfolder/log_files/PMA2020_ECMethodology_$date.log", replace
-
-use "`datadir'/ECdata_v2.dta"
 /*
+use "`datadir'/ECdata_v2.dta"
+
 ********************************************************************************
 *Section A. Data Prep
 ********************************************************************************
@@ -43,11 +43,11 @@ replace EC_measure1=1 if current_methodnum==8
 label val EC_measure1 yes_no
 
 gen EC_measure2=0
-replace EC_measure2=1 if current_methodnum==8 | recent_methodnum==8
+replace EC_measure2=1 if EC==1 
 label val EC_measure2 yes_no
 
 gen EC_measure3=0
-replace EC_measure3=1 if EC==1 
+replace EC_measure3=1 if current_methodnum==8 | recent_methodnum==8
 label val EC_measure3 yes_no
 
 gen EC_measure4=0
@@ -125,9 +125,9 @@ foreach measure in `measure_list3' {
 		}
 	}
 
-foreach measure in `measure_list3' {
-	foreach country in `country_list' {
-		svy: prop `measure' if country=="`country'"
+foreach country in `country_list' {
+	foreach measure in `measure_list3' {
+		svy: prop `measure' if country=="`country'", citype(wilson)
 		matrix one=r(table)
 		matrix `measure'_lb_`country'=one[5,2]
 		matrix `measure'_ub_`country'=one[6,2]
@@ -138,10 +138,10 @@ foreach measure in `measure_list3' {
 		}
 	}	
 	
-foreach measure in `measure_list3' {
-	foreach country in `country_list' {
+foreach country in `country_list' {
+	foreach measure in `measure_list3' {
 		foreach subgroup in `subgroup_list' {
-			svy: prop `measure' if country=="`country'" & `subgroup'==1
+			svy: prop `measure' if country=="`country'" & `subgroup'==1, citype(wilson)
 			matrix one=r(table)
 			matrix `measure'_lb_1_`subgroup'=one[5,2]
 			matrix `measure'_ub_2_`subgroup'=one[6,2]
@@ -207,17 +207,17 @@ twoway ///
 		ylabel(0(1)4, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
 		ytick(0(.5)4) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) || ///
 	scatter EC_measure1_percent country_v2, ///
-		mcolor("0 0 139") msize(vlarge) mlabel(EC_measure1_percent) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
-		xtitle("Geography", color(black)) xscale(lwidth(medthick) lcolor("0 0 139")) ///
+		mcolor("0 0 139") ///
+		xtitle("Country/Geography", color(black)) xscale(lwidth(medthick) lcolor("0 0 139")) ///
 		xlabel(1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4 "DRC Kongo Central" 5 "Ethiopia" ///
 			6 "Ghana" 7 "India Rajasthan" 8 "Kenya" 9 "Niger" 10 "Nigeria Anambra" 11 "Nigeria Kaduna" ///
 			12 "Nigeria Kano" 13 "Nigeria Lagos" 14 "Nigeria Nasarawa" 15 "Nigeria Rivers" 16 "Nigeria Taraba" ///
 			17 "Uganda", angle(45) labsize(small) labcolor(black) tlcolor("0 0 139")) ///
 		lcolor("104 34 139") ///
-	legend(off) graphregion(color(white)) plotregion(color(white))
-	*title("{bf:Definition 1 by Geography}", color("104 34 139")) subtitle("Percent Estimate and 95% Confidence Interval", color("104 34 139")) ///
-graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph_1_presentation", replace
-
+	legend(off) graphregion(color(white)) plotregion(color(white)) 
+	*title("{bf:Definition 1 by Geography}", color("104 34 139")) subtitle("Percent Estimate and 95% Confidence Interval")
+graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph_1", replace
+graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph_1.pdf", replace
 
 *Graph 2
 
@@ -255,7 +255,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ylabel(0(.5)2.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)4.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Burkina Faso") xscale(lwidth(medthick) lcolor("0 0 139")) ///
@@ -267,7 +267,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ylabel(0(.5)2.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)4.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Kenya") xscale(lwidth(medthick) lcolor("0 0 139")) ///
@@ -279,7 +279,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ylabel(0(.5)2.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)4.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("Uganda") xscale(lwidth(medthick) lcolor("0 0 139")) ///
@@ -287,23 +287,24 @@ foreach country in 1 8 17 {
 		}
 
 
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_`country'", replace
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph2_`country'.gph", replace
 	
 	
 	restore
 	}
 
-graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_Burkina Faso" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_Kenya" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_Uganda", ///
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph2_Burkina Faso" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph2_Kenya" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph2_Uganda", ///
 	rows(1) xsize(10) graphregion(color(white)) plotregion(color(white))
-	* ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
+	*ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
 	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph2_combined", replace
-assert 0
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph2_combined", replace
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph2_combined.pdf", replace
+
 
 *Graph 3
-*/	
+	
 use "data_with_ci.dta", clear
 
 collapse (mean) `measure_list3' [pw=FQweight], by(country_v2)
@@ -314,27 +315,9 @@ foreach measure in `measure_list' {
 gen EC_measure5_percent=EC_measure5*100
 gen EC_measure5_diff_measure1=EC_measure5_percent-EC_measure1_percent if inlist(country_v2, 1, 8, 17)
 gen five=5
-
-/*
-foreach measure in `measure_list3' {
-	by country_v2: egen `measure'_diff_med=median(`measure'_diff_measure1)
-	by country_v2: egen `measure'_diff_lqt=pctile(`measure'_diff_measure1), p(25)
-	by country_v2: egen `measure'_diff_uqt=pctile(`measure'_diff_measure1), p(75)
-	}
 	
-twoway ///
-	rbar EC_measure2_diff_lqt EC_measure2_diff_med country_v2, || /// 
-	rbar EC_measure2_diff_med EC_measure2_diff_uqt country_v2, || ///
-	rbar EC_measure3_diff_lqt EC_measure3_diff_med country_v2, || ///
-	rbar EC_measure3_diff_med EC_measure3_diff_uqt country_v2, || ///
-	rbar EC_measure4_diff_lqt EC_measure4_diff_med country_v2, || ///
-	rbar EC_measure4_diff_med EC_measure4_diff_uqt country_v2
-
-*/
-
-
 graph ///
-	box EC_measure2_diff_measure1 EC_measure3_diff_measure1 EC_measure4_diff_measure1 EC_measure5_diff_measure1, ///
+	box EC_measure2_diff_measure1 EC_measure3_diff_measure1 EC_measure4_diff_measure1, ///
 	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
 	box(4, fcolor(none)) ///
 	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
@@ -343,14 +326,104 @@ graph ///
 	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
 	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
 	graphregion(color(white)) plotregion(color(white))
-	*title("Percentage Point Increase from Definition 1") subtitle("Aggregation over 17 Geographies")
+	*title("Percentage Point Increase from Definition 1") subtitle("Aggregation over 17 Countries/Geographies")
 
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/New Graphs/Graph3", replace
-/*
-*Graph 4
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph3", replace
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph3.pdf", replace
+
+*/
+*Graph 3.5
 
 use "data_with_ci.dta", clear
 
+foreach subgroup in `subgroup_list' {
+	preserve	
+
+	collapse (mean) `measure_list3' if `subgroup'==1 [pw=FQweight], by(country_v2)
+	foreach measure in `measure_list' {
+		gen `measure'_`subgroup'_percent=`measure'*100
+		bysort country: gen `measure'_`subgroup'_diff_m1=`measure'_`subgroup'_percent-EC_measure1_`subgroup'_percent
+		}
+		
+	tempfile `subgroup'
+	save `subgroup', replace
+	restore
+	}
+	
+use married
+	append using umsexactive
+	append using u20
+	append using u25
+		
+graph ///
+	box EC_measure2_married_diff_m1 EC_measure3_married_diff_m1 EC_measure4_married_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Married")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_married.gph", replace
+	
+graph ///
+	box EC_measure2_umsexactive_diff_m1 EC_measure3_umsexactive_diff_m1 EC_measure4_umsexactive_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Umarried Sexually Active")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_umsa.gph", replace
+
+graph ///
+	box EC_measure2_u20_diff_m1 EC_measure3_u20_diff_m1 EC_measure4_u20_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Under 20")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_u20.gph", replace	
+	
+graph ///
+	box EC_measure2_u25_diff_m1 EC_measure3_u25_diff_m1 EC_measure4_u25_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Under 25")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_u25.gph", replace		
+	
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_married" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_umsa" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_u20" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_u25", ///
+	rows(2) xsize(7) ysize(4) graphregion(color(white)) plotregion(color(white))
+	
+		graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_combined", replace
+		graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_combined.pdf", replace
+assert 0
+	
+*Graph 4
+
+use "data_with_ci.dta", clear
 
 tempfile all
 preserve
@@ -466,7 +539,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ytick(0(.5)5.5) ylabel(0(1)5.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Burkina Faso", size(medlarge)) ///
@@ -479,7 +552,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ytick(0(.5)5.5) ylabel(0(1)5.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Kenya", size(medlarge)) ///
@@ -492,7 +565,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ytick(0(.5)5.5) ylabel(0(1)5.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Uganda", size(medlarge)) ///
@@ -500,18 +573,19 @@ foreach country in 1 8 17 {
 			legend(off) graphregion(color(white)) plotregion(color(white))
 		}
 		
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph4_`country'", replace
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_`country'.gph", replace
 		
 	restore
 	}
 	
-graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph4_Burkina Faso" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph4_Kenya" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph4_Uganda", ///
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_Burkina Faso" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_Kenya" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_Uganda", ///
 	rows(1) xsize(10) graphregion(color(white)) plotregion(color(white))
 	*ycommon title("Definition 1 by subgroup for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
 	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph4_combined", replace
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_combined", replace
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_combined.pdf", replace
 
 
 *Graph 5	
@@ -571,7 +645,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ylabel(0(1)9, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(range(0,9) lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 5 "Definition 5" 5.5 " ") xtitle("Burkina Faso", size(medlarge)) xscale(lwidth(medthick) lcolor("0 0 139")) ///
@@ -583,7 +657,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ylabel(0(1)9, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(range(0,9) lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 5 "Definition 5" 5.5 " ") xtitle("Kenya", size(medlarge)) xscale(lwidth(medthick) lcolor("0 0 139")) ///
@@ -595,7 +669,7 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub EC_measure_lb measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ylabel(0(1)9, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(range(0,9) lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 5 "Definition 5" 5.5 " ") xtitle("Uganda", size(medlarge)) xscale(lwidth(medthick) lcolor("0 0 139")) ///
@@ -603,20 +677,22 @@ foreach country in 1 8 17 {
 		}
 
 
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph5_`country'", replace
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph5_`country'.gph", replace
 	
 	
 	restore
 	}
 
-graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph5_Burkina Faso" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph5_Kenya" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph5_Uganda", ///
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph5_Burkina Faso" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph5_Kenya" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph5_Uganda", ///
 	rows(1) xsize(10) graphregion(color(white)) plotregion(color(white))
-	* ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
+	*ycommon title("Definitions 1-4 for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
 	
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph5_combined", replace
-/*	
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph5_combined.pdf", replace
+
+	
 * Graph 6
 use "data_with_ci.dta", clear
 
@@ -790,9 +866,9 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub5 EC_measure_lb5 measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure1 measures, ///
-				mcolor("0 0 139 %40") msize(large) mlabel(EC_measure1) mlabcolor(white) mlabposition(0) mlabsize(vsmall) || ///
+				mcolor("0 0 139 %40") || ///
 			scatter EC_measure5 measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure5) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ytick(0(1)17) yscale(range(0,17)) ylabel(0(2)17, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Burkina Faso", size(medlarge)) ///
@@ -807,9 +883,9 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub5 EC_measure_lb5 measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure1 measures, ///
-				mcolor("0 0 139 %40") msize(large) mlabel(EC_measure1) mlabcolor(white) mlabposition(0) mlabsize(vsmall) || ///
+				mcolor("0 0 139 %40") || ///
 			scatter EC_measure5 measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure5) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ytick(0(1)17) yscale(range(0,17)) ylabel(0(2)17, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Kenya", size(medlarge)) ///
@@ -824,9 +900,9 @@ foreach country in 1 8 17 {
 			rcap EC_measure_ub5 EC_measure_lb5 measures, ///
 				lcolor("104 34 139") lwidth(medthick) || ///
 			scatter EC_measure1 measures, ///
-				mcolor("0 0 139 %50") msize(large) mlabel(EC_measure1) mlabcolor(white) mlabposition(0) mlabsize(vsmall) || ///
+				mcolor("0 0 139 %50") || ///
 			scatter EC_measure5 measures, ///
-				mcolor("0 0 139") msize(large) mlabel(EC_measure5) mlabcolor(white) mlabposition(0) mlabsize(vsmall) ///
+				mcolor("0 0 139") ///
 			ytick(0(1)17) yscale(range(0,17)) ylabel(0(2)17, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
 			xlabel(0.5(1)5.5, noticks angle(45)) ///
 			xlabel(0.5 " " 1 "All" 2 "In Union" 3 "Unmarried Sexually Active" 4 "Under 20" 5 "Under 25" 5.5 " ", labsize(small)) xtitle("Uganda", size(medlarge)) ///
@@ -836,15 +912,18 @@ foreach country in 1 8 17 {
 			legend(order(4 2 3 1))
 		}
 		
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph6_`country'", replace
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph6_`country'.gph", replace
 		
 	restore
 	}
 	
-graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph6_Burkina Faso" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph6_Kenya" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph6_Uganda", ///
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph6_Burkina Faso" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph6_Kenya" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph6_Uganda", ///
 	rows(1) xsize(10) graphregion(color(white)) plotregion(color(white))
 	*ycommon title("Definition 1 by subgroup for Burkina Faso, Kenya, and Uganda") subtitle("Percent Estimate and 95% Confidence Interval")
 	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/ICFP/Graph6_combined", replace
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph6_combined", replace
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph6_combined.pdf", replace
+
+	
