@@ -259,7 +259,7 @@ twoway ///
 
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph1.5_combined", replace
 	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph15_combined.pdf", replace
-	/*
+	
 *Graph 2
 
 use `graph1_2', clear	
@@ -348,97 +348,6 @@ graph ///
 
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph3", replace
 	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph3.pdf", replace
-
-
-*Graph 3.5
-
-use "data_with_ci.dta", clear
-
-foreach subgroup in `subgroup_list' {
-	preserve	
-
-	collapse (mean) `measure_list3' if `subgroup'==1 [pw=FQweight], by(country_v2)
-	foreach measure in `measure_list' {
-		gen `measure'_`subgroup'_percent=`measure'*100
-		bysort country: gen `measure'_`subgroup'_diff_m1=`measure'_`subgroup'_percent-EC_measure1_`subgroup'_percent
-		}
-		
-	tempfile `subgroup'
-	save `subgroup', replace
-	restore
-	}
-	
-use married
-	append using umsexactive
-	append using u20
-	append using u25
-		
-graph ///
-	box EC_measure2_married_diff_m1 EC_measure3_married_diff_m1 EC_measure4_married_diff_m1, ///
-	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
-	box(4, fcolor(none)) ///
-	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
-	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
-	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
-	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
-	legend(off) ///
-	graphregion(color(white)) plotregion(color(white)) ///
-	title("Married")
-	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_married.gph", replace
-	
-graph ///
-	box EC_measure2_umsexactive_diff_m1 EC_measure3_umsexactive_diff_m1 EC_measure4_umsexactive_diff_m1, ///
-	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
-	box(4, fcolor(none)) ///
-	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
-	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
-	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
-	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
-	legend(off) ///
-	graphregion(color(white)) plotregion(color(white)) ///
-	title("Umarried Sexually Active")
-	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_umsa.gph", replace
-
-graph ///
-	box EC_measure2_u20_diff_m1 EC_measure3_u20_diff_m1 EC_measure4_u20_diff_m1, ///
-	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
-	box(4, fcolor(none)) ///
-	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
-	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
-	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
-	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
-	legend(off) ///
-	graphregion(color(white)) plotregion(color(white)) ///
-	title("Under 20")
-	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u20.gph", replace	
-	
-graph ///
-	box EC_measure2_u25_diff_m1 EC_measure3_u25_diff_m1 EC_measure4_u25_diff_m1, ///
-	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
-	box(4, fcolor(none)) ///
-	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
-	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
-	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
-	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
-	legend(off) ///
-	graphregion(color(white)) plotregion(color(white)) ///
-	title("Under 25")
-	
-	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u25.gph", replace		
-	
-graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_married" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_umsa" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u20" ///
-	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u25", ///
-	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
-	rows(2) xsize(7) ysize(4) graphregion(color(white)) plotregion(color(white))
-	
-		graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_combined", replace
-		graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_combined.pdf", replace
-assert 0
 	
 *Graph 4
 
@@ -606,6 +515,96 @@ graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_Genera
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_combined", replace
 	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph4_combined.pdf", replace
 
+
+*Graph 4.5
+
+use "data_with_ci.dta", clear
+
+foreach subgroup in `subgroup_list' {
+	preserve	
+
+	collapse (mean) `measure_list3' if `subgroup'==1 [pw=FQweight], by(country_v2)
+	foreach measure in `measure_list' {
+		gen `measure'_`subgroup'_percent=`measure'*100
+		bysort country: gen `measure'_`subgroup'_diff_m1=`measure'_`subgroup'_percent-EC_measure1_`subgroup'_percent
+		}
+		
+	tempfile `subgroup'
+	save `subgroup', replace
+	restore
+	}
+	
+use married
+	append using umsexactive
+	append using u20
+	append using u25
+		
+graph ///
+	box EC_measure2_married_diff_m1 EC_measure3_married_diff_m1 EC_measure4_married_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(off) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Married")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_married.gph", replace
+	
+graph ///
+	box EC_measure2_umsexactive_diff_m1 EC_measure3_umsexactive_diff_m1 EC_measure4_umsexactive_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(off) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Umarried Sexually Active")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_umsa.gph", replace
+
+graph ///
+	box EC_measure2_u20_diff_m1 EC_measure3_u20_diff_m1 EC_measure4_u20_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(off) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Under 20")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u20.gph", replace	
+	
+graph ///
+	box EC_measure2_u25_diff_m1 EC_measure3_u25_diff_m1 EC_measure4_u25_diff_m1, ///
+	box(1, color("104 34 139")) box(2, color("24 116 205")) box(3, color("171 130 255"*1.5)) ///
+	box(4, fcolor(none)) ///
+	marker(1, mcolor("0 0 139")) marker(2, mcolor("0 0 139")) marker(3, mcolor("0 0 139")) marker(4, mcolor("0 0 139")) ///
+	ytitle("Percentage Point", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
+	ylabel(, labcolor(black) tlcolor("0 0 139") glcolor("104 34 139" %15)) ///
+	yvaroptions(axis(lcolor("0 0 139") lwidth(medthick))) ///
+	legend(off) ///
+	graphregion(color(white)) plotregion(color(white)) ///
+	title("Under 25")
+	
+	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u25.gph", replace		
+	
+graph combine "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_married" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_umsa" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u20" ///
+	"/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph35_u25", ///
+	legend(label(1 "1 and 2") label(2 "1 and 3") label(3 "1 and 4") label(4 "1 and 5") rows(1) region(lcolor("0 0 139") lwidth(medium))) ///
+	rows(2) xsize(7) ysize(4) graphregion(color(white)) plotregion(color(white))
+	
+		graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_combined", replace
+		graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph3.5_combined.pdf", replace
+assert 0
 
 *Graph 5	
 
