@@ -203,35 +203,10 @@ format EC_measure1_percent %2.1f
 format EC_measure2_percent %2.1f
 format EC_measure3_percent %2.1f
 format EC_measure4_percent %2.1f
-/*
-twoway ///
-	scatter EC_measure1_percent EC_measure2_percent EC_measure3_percent EC_measure3_percent country_v2, ///
-		mcolor("0 0 139") ///
-		xtitle("Country/Geography", color(black)) xscale(lwidth(medthick) lcolor("0 0 139")) ///
-		xlabel(1 "Burkina Faso" 2 "Cote d'Ivoire" 3 "DRC Kinshasa" 4 "DRC Kongo Central" 5 "Ethiopia" ///
-			6 "Ghana" 7 "India Rajasthan" 8 "Kenya" 9 "Niger" 10 "Nigeria Anambra" 11 "Nigeria Kaduna" ///
-			12 "Nigeria Kano" 13 "Nigeria Lagos" 14 "Nigeria Nasarawa" 15 "Nigeria Rivers" 16 "Nigeria Taraba" ///
-			17 "Uganda", angle(45) labsize(small) labcolor(black) tlcolor("0 0 139")) ///
-		lcolor("104 34 139")
-assert 0
 
-
-tempfile high_low
-save high_low, replace
-keep if inlist(country_v2, 8, 9, 12, 13, 15, 16)
-	gen country_v3=1 if country_v2==12
-		replace country_v3=2 if country_v2==16
-		replace country_v3=3 if country_v2==9
-		replace country_v3=4 if country_v2==8
-		replace country_v3=5 if country_v2==13
-		replace country_v3=6 if country_v2==15
-	label define country_v3 1 "Nigeria Kano" 2 "Nigeria Taraba" 3 "Niger" 4 "Kenya" 5 "Nigeria Lagos" 6 "Nigeria Rivers"
-	label val country_v3 country_v3
-	sort country_v3
-	
-foreach country in 1 2 3 4 5 6 {
+foreach num in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 {
 	preserve
-	keep if country_v3==`country'
+	keep if country_v2==`num'
 	
 	expand 4 in 1
 		
@@ -257,19 +232,17 @@ foreach country in 1 2 3 4 5 6 {
 
 	format EC_measure %2.1f	
 	
-	tempfile country_`country'
-	save country_`country', replace
+	tempfile country_`num'
+	save country_`num', replace
 	restore
 	}
 	
 	use country_1.dta, clear
-		append using country_2.dta
-		append using country_3.dta
-		append using country_4.dta
-		append using country_5.dta
-		append using country_6.dta
+	foreach num in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 {
+		append using country_`num'.dta
+		}
 		
-	keep country_v3 measures EC_measure EC_measure_ub EC_measure_lb
+	keep country_v2 measures EC_measure EC_measure_ub EC_measure_lb
 
 twoway ///
 	(rcap EC_measure_ub EC_measure_lb measures, ///
@@ -278,15 +251,15 @@ twoway ///
 		ytick(0(.5)4) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139"))) || ///
 	(scatter EC_measure measures, ///
 		mcolor("0 0 139") ///
-		ylabel(, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
+		ytick(0(.5)5) ylabel(0(1)5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139")) ///
 		xlabel(0.5(1)4.5, noticks angle(45)) ///
 		xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("") xscale(lwidth(medthick) lcolor("0 0 139")) ///
 		legend(off) graphregion(color(white)) plotregion(color(white))), ///
-	by(country_v3, note("") noixtick legend(off) graphregion(color(white)) plotregion(color(white))) play(RemoveBoxColor.grec)
-	
+	by(country_v2,note("") rows(3) noixtick legend(off) graphregion(color(white)) plotregion(color(white))) play(RemoveBoxColor.grec)
+
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph1.5_combined", replace
-	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph15_combined.pdf", replace
-	*/   
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph15_combined.pdf", replace
+	/*
 *Graph 2
 
 use `graph1_2', clear	
@@ -338,14 +311,14 @@ foreach country in 1 8 17 {
 		ytick(0(.5)4) ytitle("Percent", color(black)) yscale(lwidth(medthick) lcolor("0 0 139"))) || ///
 	(scatter EC_measure measures, ///
 		mcolor("0 0 139") ///
-		ytick(0(.5)2.5) ylabel(0(.5)2.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(range(0 2.5) lwidth(medthick) lcolor("0 0 139")) ysize(4) ///
+		ytick(0(.5)2.5) ylabel(0(.5)2.5, tlcolor("0 0 139") glcolor("104 34 139" %15)) ytitle("Percent", color(black)) yscale(range(0 2.5) lwidth(medthick) lcolor("0 0 139")) ///
 		xlabel(0.5(1).5, noticks angle(45)) ///
 		xlabel(0.5 " " 1 "Definition 1" 2 "Definition 2" 3 "Definition 3" 4 "Definition 4" 4.5 " ") xtitle("") xscale(lwidth(medthick) lcolor("0 0 139")) ///
 		legend(off) graphregion(color(white)) plotregion(color(white))), ///
 	by(country_v2, row(1) note("") noixtick legend(off) graphregion(color(white)) plotregion(color(white))) play(RemoveBoxColor2.grec)
 	
 	graph save "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph2.5_combined", replace
-	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2018.11.28/Graph25_combined.pdf", replace
+	graph export "/Users/ealarson/Dropbox (Gates Institute)/1 DataManagement_General/X 9 EC use/Report Draft/Graphs_2019.03.07/Graph25_combined.pdf", replace
 		
 
 *Graph 3
