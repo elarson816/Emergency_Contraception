@@ -371,7 +371,7 @@ foreach country in `country_list' {
 	
 	}
 
-	
+	assert 0
 *******AVERAGE*******
 preserve
 
